@@ -5,7 +5,7 @@ using namespace std;
 
 class Tensor {
 private:
-    vector<vector<float>> data;
+    vector<float> data;
     size_t height, width;
 public:
     Tensor(size_t h, size_t w);
@@ -13,7 +13,8 @@ public:
 
     size_t getWidth() const;
     size_t getHeight() const;
-
+    
+    float* operator[](const size_t i);
     Tensor operator*(const Tensor& other) const;
     Tensor operator+(const Tensor& other) const;
     void display() const;
