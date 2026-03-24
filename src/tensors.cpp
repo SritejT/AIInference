@@ -25,20 +25,25 @@ float* Tensor::operator[](const size_t i) { return &data[i*width]; }
 
 Tensor Tensor::operator*(const Tensor& other) const {
     Tensor result(height, other.getWidth());
-    size_t B = 32;
+    size_t B = 16;
 
-    for (size_t II=0; II<height; II+=B) {
-        for (size_t JJ=0; JJ<other.getWidth(); JJ+=B) {
-            for (size_t KK=0; KK<width; KK+=B) {
+
+    // Blocked loop with 16^3 = 4096 block size
+    for (size_t II = 0; II < height; II += B) {
+        for (size_t JJ = 0; JJ < other.getWidth(); JJ += B) {
+            for (size_t KK = 0; KK < width; KK += B) {
+                
                 for (size_t i = II; i < min(II + B, height); i++) {
-                    for (size_t j = JJ; j < min(JJ + B, other.getWidth()); j++) {
-                        float sum = 0.0f;
-                        for (size_t k = KK; k < min(KK + B, width); k++) {
-                            sum += data[i*width + k] * other.data[k*other.getWidth() + j];
+                    for (size_t k = KK; k < min(KK + B, width); k++) {
+
+                        float x = data[i*width + k];
+                        for (size_t j = JJ; j < min(JJ + B, other.getWidth()); j++) {
+                            result[i][j] += x * other.data[k*other.getWidth() + j];
                         }
-                        result[i][j] += sum;
+
                     }
                 }
+
             }
         }
     }
@@ -48,11 +53,14 @@ Tensor Tensor::operator*(const Tensor& other) const {
 
 Tensor Tensor::operator+(const Tensor& other) const {
     Tensor result(height, width);
+
     for (size_t i = 0; i < height; i++) {
         for (size_t j = 0; j < width; j++) {
             result[i][j] = result[i][j] + other.data[i*width + j];
         }
     }
+
+
     return result;
 }
 
