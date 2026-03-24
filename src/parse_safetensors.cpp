@@ -10,6 +10,7 @@ using namespace std;
 using namespace rapidjson;
 
 SafeTensorsParser::SafeTensorsParser(string fname) {
+
     f.open(fname, ios::binary);
     if (!f.is_open()) {
         cerr << "Failed to open file: " << fname << endl;

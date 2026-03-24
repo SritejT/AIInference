@@ -10,7 +10,7 @@ int main() {
     
     chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
 
-    SafeTensorsParser parser("model.safetensors");
+    SafeTensorsParser parser("src/model.safetensors");
     
     vector<Tensor> tensors = parser.parse();
     
