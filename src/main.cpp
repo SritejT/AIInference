@@ -13,8 +13,14 @@ int main() {
     SafeTensorsParser parser("src/model.safetensors");
     
     vector<Tensor> tensors = parser.parse();
-    
+
+    chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
+    auto parse_duration = chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
+    cout << "Parse Time: " << parse_duration << " ns" << endl;
+
     // Test tensor addition and multiplication
+    
+    t1 = chrono::high_resolution_clock::now();
 
     vector<float> input(784, 0.1f);
     Tensor input_tensor = Tensor(input, 784, 1);
@@ -28,10 +34,9 @@ int main() {
     acc = tensors[5] * acc;
     acc = acc + tensors[4];
 
-    acc.display();
+    t2 = chrono::high_resolution_clock::now();
+    auto math_duration = chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
+    cout << "Math Time: " << math_duration << " ns" << endl;
 
-    chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
-    cout << "Time: " << duration << " ns" << endl;
     return 0;
 }
