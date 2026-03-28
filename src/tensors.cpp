@@ -67,14 +67,12 @@ Tensor Tensor::operator*(const Tensor& other) const {
 }
 
 Tensor Tensor::operator+(const Tensor& other) const {
+
     Tensor result(height, width);
 
-    for (size_t i = 0; i < height; i++) {
-        for (size_t j = 0; j < width; j++) {
-            result.data[i*width + j] += other.data[i*width + j];
-        }
+    for (size_t i = 0; i < height*width; i++) {
+        result.data[i] += other.data[i];
     }
-
 
     return result;
 }
