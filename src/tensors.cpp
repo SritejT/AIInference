@@ -79,6 +79,9 @@ Tensor Tensor::operator+(const Tensor& other) const {
     return result;
 }
 
+vector<float>::const_iterator Tensor::begin() { return data.begin(); }
+vector<float>::const_iterator Tensor::end() { return data.end(); }
+
 void Tensor::display() const {
     for (size_t i = 0; i < height; i++) {
         for (size_t j = 0; j < width; j++) {

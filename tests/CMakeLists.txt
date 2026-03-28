@@ -1,4 +1,4 @@
-add_executable(all_tests test_file_parsing.cpp)
+add_executable(all_tests test_file_parsing.cpp test_matrix_mult.cpp)
 
 target_link_libraries(all_tests GTest::gtest_main AIInference_lib)
 

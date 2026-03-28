@@ -13,6 +13,9 @@ public:
 
     size_t getWidth() const;
     size_t getHeight() const;
+
+    vector<float>::const_iterator begin();
+    vector<float>::const_iterator end();
     
     float* operator[](const size_t i);
     Tensor operator*(const Tensor& other) const;
