@@ -2,6 +2,7 @@
 #include <iostream>
 #include "tensors.h"
 #include <algorithm>
+#include <arm_neon.h>
 using namespace std;
 
 Tensor::Tensor(size_t h, size_t w) {
@@ -21,7 +22,6 @@ Tensor::Tensor(vector<float> d, size_t h, size_t w) {
 size_t Tensor::getWidth() const { return width; }
 size_t Tensor::getHeight() const { return height; }
 
-float* Tensor::operator[](const size_t i) { return &data[i*width]; }
 
 Tensor Tensor::operator*(const Tensor& other) const {
     Tensor result(height, other.getWidth());
@@ -36,14 +36,29 @@ Tensor Tensor::operator*(const Tensor& other) const {
                 for (size_t i = II; i < min(II + B, height); i++) {
                     for (size_t k = KK; k < min(KK + B, width); k++) {
 
-                        float x = data[i*width + k];
-                        for (size_t j = JJ; j < min(JJ + B, other.getWidth()); j++) {
-                            result[i][j] += x * other.data[k*other.getWidth() + j];
+                        float32x4_t vx = vdupq_n_f32(data[i*width + k]);
+
+                        size_t j = JJ;
+                        size_t simd_limit = min(JJ + B, other.getWidth()) & ~3;
+
+                        for (; j < simd_limit; j+=4) {
+                            
+                            float32x4_t vy = vld1q_f32(&result.data[i*other.getWidth() + j]);
+                            float32x4_t vz = vld1q_f32(&other.data[k*other.getWidth() + j]);
+
+                            vy = vfmaq_f32(vy, vx, vz);
+
+                            vst1q_f32(&result.data[i*other.getWidth() + j], vy);
+
                         }
+
+                        for (; j < min(JJ + B, other.getWidth()); j++) {
+                            result.data[i*other.getWidth() + j] += data[i*width + k] * other.data[k*other.getWidth() + j];
+                        }
+                        
 
                     }
                 }
-
             }
         }
     }
@@ -56,7 +71,7 @@ Tensor Tensor::operator+(const Tensor& other) const {
 
     for (size_t i = 0; i < height; i++) {
         for (size_t j = 0; j < width; j++) {
-            result[i][j] = result[i][j] + other.data[i*width + j];
+            result.data[i*width + j] += other.data[i*width + j];
         }
     }
 
