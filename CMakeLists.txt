@@ -5,11 +5,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64")
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 
 
 add_library(AIInference_lib STATIC
     src/tensors.cpp
+    src/basic_tensors.cpp
     src/parse_safetensors.cpp
 )
 
@@ -19,9 +20,18 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
 )
 
+add_executable(base
+    src/run_basic_tensors.cpp
+)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE AIInference_lib)
+target_link_libraries(base PRIVATE AIInference_lib)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
+    -Wall -Wextra -Wpedantic
+)
+
+target_compile_options(base PRIVATE
     -Wall -Wextra -Wpedantic
 )
 
