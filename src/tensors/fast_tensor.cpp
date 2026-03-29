@@ -1,6 +1,5 @@
 #include <vector>
 #include "fast_tensor.h"
-#include <algorithm>
 #include <arm_neon.h>
 using namespace std;
 
@@ -9,42 +8,36 @@ FastTensor::FastTensor(size_t h, size_t w): ITensor(h, w) {}
 FastTensor::FastTensor(vector<float> d, size_t h, size_t w): ITensor(d, h, w) {}
 
 FastTensor FastTensor::operator*(const FastTensor& other) const {
+    
     FastTensor result(height, other.getWidth());
-    size_t B = 16;
 
+    for (size_t i = 0; i < height; i++) {
 
-    // Blocked loop with 16^3 = 4096 block size
-    for (size_t II = 0; II < height; II += B) {
-        for (size_t JJ = 0; JJ < other.getWidth(); JJ += B) {
-            for (size_t KK = 0; KK < width; KK += B) {
-                
-                for (size_t i = II; i < min(II + B, height); i++) {
-                    for (size_t k = KK; k < min(KK + B, width); k++) {
+        size_t simd_limit = other.getWidth() & ~3;
 
-                        float32x4_t vx = vdupq_n_f32(data[i*width + k]);
+        vector<float32x4_t> accs(simd_limit / 4, vdupq_n_f32(0.0f));
 
-                        size_t j = JJ;
-                        size_t simd_limit = min(JJ + B, other.getWidth()) & ~3;
+        for (size_t k = 0; k < width; k++) {
+            
+            float x = data[i * width + k];
+            float32x4_t vx = vdupq_n_f32(x);
 
-                        for (; j < simd_limit; j+=4) {
-                            
-                            float32x4_t vy = vld1q_f32(&result.data[i*other.getWidth() + j]);
-                            float32x4_t vz = vld1q_f32(&other.data[k*other.getWidth() + j]);
+            size_t j = 0;
 
-                            vy = vfmaq_f32(vy, vx, vz);
+            for (; j < simd_limit; j+=4) {
 
-                            vst1q_f32(&result.data[i*other.getWidth() + j], vy);
+                float32x4_t vy = vld1q_f32(&other.data[k*other.getWidth() + j]);
 
-                        }
-
-                        for (; j < min(JJ + B, other.getWidth()); j++) {
-                            result.data[i*other.getWidth() + j] += data[i*width + k] * other.data[k*other.getWidth() + j];
-                        }
-                        
-
-                    }
-                }
+                accs[j/4] = vfmaq_f32(accs[j/4], vx, vy);
             }
+
+            for (; j < other.getWidth(); j++) {
+                result.data[i*other.getWidth() + j] += x * other.data[k*other.getWidth() + j];
+            }
+        }
+
+        for (size_t j = 0; j < simd_limit; j += 4) {
+            vst1q_f32(&result.data[i*other.getWidth() + j], accs[j/4]);
         }
     }
 
