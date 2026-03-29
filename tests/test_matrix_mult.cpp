@@ -78,3 +78,23 @@ TEST(MatrixMultTest, LargeRectMatrixMultTest) {
     EXPECT_EQ(*result.begin(), 1000000.0f);
     
 }
+
+
+// Test whether loop blocking and SIMD vectorization works with matrices
+// whose numbers of elements are not divisible by the block size or 
+// number of SIMD registers
+TEST(MatrixMultTest, PrimeSizeMatrixMultTest) {
+    vector<float> a = vector<float>(67, 1.0f);
+    vector<float> b = vector<float>(67, 1.0f);
+
+    FastTensor A = FastTensor(a, 67, 1);
+    FastTensor B = FastTensor(b, 1, 67);
+
+    FastTensor result = A * B;
+    ASSERT_EQ(result.getWidth(), 67);
+    ASSERT_EQ(result.getHeight(), 67);
+
+    for (auto r : result) {
+        EXPECT_EQ(r, 1.0f);
+    }
+}
