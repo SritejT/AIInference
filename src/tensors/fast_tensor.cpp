@@ -13,32 +13,30 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
 
     for (size_t i = 0; i < height; i++) {
 
-        size_t simd_limit = other.getWidth() & ~3;
+        size_t j = 0;
 
-        vector<float32x4_t> accs(simd_limit / 4, vdupq_n_f32(0.0f));
+        for (; j+4 < other.getWidth(); j+=4) {
 
-        for (size_t k = 0; k < width; k++) {
+            float32x4_t acc = vdupq_n_f32(0.0f);
+
+            for (size_t k = 0; k < width; k++) {
+                float32x4_t va = vdupq_n_f32(data[i * width + k]);
+                float32x4_t vb = vld1q_f32(&other.data[k * other.getWidth() + j]);
+                acc = vmlaq_f32(acc, va, vb);
+            }
+
+            vst1q_f32(&result.data[i * other.getWidth() + j], acc);
             
-            float x = data[i * width + k];
-            float32x4_t vx = vdupq_n_f32(x);
-
-            size_t j = 0;
-
-            for (; j < simd_limit; j+=4) {
-
-                float32x4_t vy = vld1q_f32(&other.data[k*other.getWidth() + j]);
-
-                accs[j/4] = vfmaq_f32(accs[j/4], vx, vy);
-            }
-
-            for (; j < other.getWidth(); j++) {
-                result.data[i*other.getWidth() + j] += x * other.data[k*other.getWidth() + j];
-            }
         }
 
-        for (size_t j = 0; j < simd_limit; j += 4) {
-            vst1q_f32(&result.data[i*other.getWidth() + j], accs[j/4]);
+        for (; j < other.getWidth(); j++) {
+            float sum = 0.0f;
+            for (size_t k = 0; k < width; k++) {
+                sum += data[i * width + k] * other.data[k * other.getWidth() + j];
+            }
+            result.data[i * other.getWidth() + j] = sum;
         }
+        
     }
 
     return result;
