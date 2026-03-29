@@ -56,7 +56,7 @@ FastTensor FastTensor::operator+(const FastTensor& other) const {
     FastTensor result(height, width);
 
     for (size_t i = 0; i < height*width; i++) {
-        result.data[i] += other.data[i];
+        result.data[i] = data[i] + other.data[i];
     }
 
     return result;
