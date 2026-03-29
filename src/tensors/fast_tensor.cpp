@@ -53,10 +53,18 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
 
 FastTensor FastTensor::operator+(const FastTensor& other) const {
 
-    FastTensor result(height, width);
+    FastTensor result = *this;
 
-    for (size_t i = 0; i < height*width; i++) {
-        result.data[i] = data[i] + other.data[i];
+    size_t simd_limit = (width * height) & ~3;
+    for (size_t i = 0; i < simd_limit; i+=4) {
+        float32x4_t va = vld1q_f32(&result.data[i]);
+        float32x4_t vb = vld1q_f32(&other.data[i]);
+        va = vaddq_f32(va, vb);
+        vst1q_f32(&result.data[i], va);
+    }
+
+    for (size_t i = simd_limit; i < width * height; i++) {
+        result.data[i] += other.data[i];
     }
 
     return result;
