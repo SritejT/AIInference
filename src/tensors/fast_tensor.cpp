@@ -14,9 +14,10 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
     for (size_t i = 0; i < height; i++) {
 
         size_t j = 0;
-
+        
         for (; j+4 < other.getWidth(); j+=4) {
 
+            // Accumulates result[i][j:j+4]
             float32x4_t acc = vdupq_n_f32(0.0f);
 
             for (size_t k = 0; k < width; k++) {
@@ -29,6 +30,8 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
             
         }
 
+        // Do regular matrix mult for all j not covered by SIMD (i.e. if the j dimension is 
+        // not a multiple of 4)
         for (; j < other.getWidth(); j++) {
             float sum = 0.0f;
             for (size_t k = 0; k < width; k++) {

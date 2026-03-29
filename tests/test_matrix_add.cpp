@@ -92,3 +92,35 @@ TEST(MatrixAddTest, PrimeSizeMatrixAddTest) {
         EXPECT_EQ(r, 3.0f);
     }
 }
+
+TEST(MatrixAddTest, NegativeValuesMatrixAddTest) {
+    vector<float> a = vector<float>(1000000, -3.0f);
+    vector<float> b = vector<float>(1000000, -67.0f);
+
+    FastTensor A = FastTensor(a, 1000, 1000);
+    FastTensor B = FastTensor(b, 1000, 1000);
+
+    FastTensor result = A + B;
+    ASSERT_EQ(result.getWidth(), 1000);
+    ASSERT_EQ(result.getHeight(), 1000);
+
+    for (auto r : result) {
+        EXPECT_EQ(r, -70.0f);
+    }
+}
+
+TEST(MatrixAddTest, LargeValuesMatrixAddTest) {
+    vector<float> a = vector<float>(100, 20000.0f);
+    vector<float> b = vector<float>(100, 10000.0f);
+
+    FastTensor A = FastTensor(a, 10, 10);
+    FastTensor B = FastTensor(b, 10, 10);
+
+    FastTensor result = A + B;
+    ASSERT_EQ(result.getWidth(), 10);
+    ASSERT_EQ(result.getHeight(), 10);
+
+    for (auto r : result) {
+        EXPECT_EQ(r, 30000.0f);
+    }
+}
