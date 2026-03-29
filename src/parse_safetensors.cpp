@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cstring>
 #include "rapidjson/document.h"
-#include "tensors.h"
+#include "fast_tensor.h"
 #include "parse_safetensors.h"
 
 using namespace std;
@@ -56,16 +56,16 @@ vector<TensorInfo> SafeTensorsParser::parse_header(string header_json) {
     return info;
 }
 
-vector<Tensor> SafeTensorsParser::parse_data(vector<TensorInfo>& info) {
+vector<FastTensor> SafeTensorsParser::parse_data(vector<TensorInfo>& info) {
     // Read tensors from safetensors file
-    vector<Tensor> tensors;
+    vector<FastTensor> tensors;
 
     for (auto& t : info) {
         f.seekg(t.start);
         vector<float> d((t.end - t.start) / sizeof(float));
         f.read(reinterpret_cast<char*>(&d[0]), t.end - t.start);
 
-        tensors.push_back(Tensor(d, t.shape[0], (
+        tensors.push_back(FastTensor(d, t.shape[0], (
                         t.shape.size() > 1 ? t.shape[1] : 1
                         )
                     ));
@@ -74,7 +74,7 @@ vector<Tensor> SafeTensorsParser::parse_data(vector<TensorInfo>& info) {
     return tensors; 
 }
 
-vector<Tensor> SafeTensorsParser::parse() {
+vector<FastTensor> SafeTensorsParser::parse() {
 
     string header_json = read_header_data();
     vector<TensorInfo> info = parse_header(header_json);

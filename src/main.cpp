@@ -1,7 +1,7 @@
 #include <chrono>
 #include <iostream>
 #include <cstring>
-#include "tensors.h"
+#include "fast_tensor.h"
 #include "parse_safetensors.h"
 
 using namespace std;
@@ -12,7 +12,7 @@ int main() {
 
     SafeTensorsParser parser("models/model.safetensors");
     
-    vector<Tensor> tensors = parser.parse();
+    vector<FastTensor> tensors = parser.parse();
 
     chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
     auto parse_duration = chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
@@ -23,9 +23,9 @@ int main() {
     t1 = chrono::high_resolution_clock::now();
 
     vector<float> input(784, 0.1f);
-    Tensor input_tensor = Tensor(input, 784, 1);
+    FastTensor input_tensor = FastTensor(input, 784, 1);
 
-    Tensor acc = tensors[1] * input_tensor;
+    FastTensor acc = tensors[1] * input_tensor;
     acc = acc + tensors[0];
 
     acc = tensors[3] * acc;

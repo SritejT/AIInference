@@ -10,7 +10,7 @@ TEST(ParsingTest, OpenFileTest) {
 TEST(ParsingTest, ParseFileTest) {
     SafeTensorsParser parser(string(SRC_DIR) + "/models/model.safetensors");
 
-    vector<Tensor> tensors = parser.parse();
+    vector<FastTensor> tensors = parser.parse();
 
     ASSERT_EQ(tensors.size(), 6);
 

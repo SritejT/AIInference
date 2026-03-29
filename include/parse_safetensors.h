@@ -1,6 +1,7 @@
+#pragma once
 #include <fstream>
 #include <cstring>
-#include "tensors.h"
+#include "fast_tensor.h"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ private:
 
     vector<TensorInfo> parse_header(string header_json);
 
-    vector<Tensor> parse_data(vector<TensorInfo>& info); 
+    vector<FastTensor> parse_data(vector<TensorInfo>& info); 
 
 
 public:
@@ -30,6 +31,6 @@ public:
 
     ~SafeTensorsParser();
 
-    vector<Tensor> parse(); 
+    vector<FastTensor> parse(); 
 };
 

@@ -1,24 +1,21 @@
 #pragma once
 #include <vector>
-
 using namespace std;
 
-class Tensor {
-private:
+class ITensor {
+protected:
     vector<float> data;
     size_t height, width;
+    ITensor(size_t h, size_t w);
+    ITensor(vector<float> d, size_t h, size_t w);
+
 public:
-    Tensor(size_t h, size_t w);
-    Tensor(vector<float> d, size_t h, size_t w);
 
     size_t getWidth() const;
     size_t getHeight() const;
 
     vector<float>::const_iterator begin();
     vector<float>::const_iterator end();
-    
-    float* operator[](const size_t i);
-    Tensor operator*(const Tensor& other) const;
-    Tensor operator+(const Tensor& other) const;
+
     void display() const;
 };

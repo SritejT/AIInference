@@ -1,14 +1,13 @@
-#include "tensors.h"
-
+#include "fast_tensor.h"
 #include <gtest/gtest.h>
 
 using namespace std;
 
 TEST(MatrixMultTest, SmallSquareMatrixMultTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2);
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2);
+    FastTensor a = FastTensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2);
+    FastTensor b = FastTensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2);
 
-    Tensor result = a * b;
+    FastTensor result = a * b;
     EXPECT_EQ(result.getWidth(), 2);
     EXPECT_EQ(result.getHeight(), 2);
 
@@ -23,10 +22,10 @@ TEST(MatrixMultTest, SmallSquareMatrixMultTest) {
 }
 
 TEST(MatrixMultTest, SmallRectMatrixMultTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2);
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 4);
+    FastTensor a = FastTensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2);
+    FastTensor b = FastTensor({5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 4);
 
-    Tensor result = a * b;
+    FastTensor result = a * b;
     EXPECT_EQ(result.getWidth(), 4);
     EXPECT_EQ(result.getHeight(), 2);
 

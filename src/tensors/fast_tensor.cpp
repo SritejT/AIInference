@@ -1,30 +1,15 @@
 #include <vector>
-#include <iostream>
-#include "tensors.h"
+#include "fast_tensor.h"
 #include <algorithm>
 #include <arm_neon.h>
 using namespace std;
 
-Tensor::Tensor(size_t h, size_t w) {
-    width = w;
-    height = h;
+FastTensor::FastTensor(size_t h, size_t w): ITensor(h, w) {}
 
-    data.resize(h*w);
-    
-}
+FastTensor::FastTensor(vector<float> d, size_t h, size_t w): ITensor(d, h, w) {}
 
-Tensor::Tensor(vector<float> d, size_t h, size_t w) {
-    width = w;
-    height = h;
-    data = d;
-}
-
-size_t Tensor::getWidth() const { return width; }
-size_t Tensor::getHeight() const { return height; }
-
-
-Tensor Tensor::operator*(const Tensor& other) const {
-    Tensor result(height, other.getWidth());
+FastTensor FastTensor::operator*(const FastTensor& other) const {
+    FastTensor result(height, other.getWidth());
     size_t B = 16;
 
 
@@ -66,9 +51,9 @@ Tensor Tensor::operator*(const Tensor& other) const {
     return result;
 }
 
-Tensor Tensor::operator+(const Tensor& other) const {
+FastTensor FastTensor::operator+(const FastTensor& other) const {
 
-    Tensor result(height, width);
+    FastTensor result(height, width);
 
     for (size_t i = 0; i < height*width; i++) {
         result.data[i] += other.data[i];
@@ -77,15 +62,4 @@ Tensor Tensor::operator+(const Tensor& other) const {
     return result;
 }
 
-vector<float>::const_iterator Tensor::begin() { return data.begin(); }
-vector<float>::const_iterator Tensor::end() { return data.end(); }
-
-void Tensor::display() const {
-    for (size_t i = 0; i < height; i++) {
-        for (size_t j = 0; j < width; j++) {
-            cout << data[i*width + j] << " ";
-        }
-        cout << endl;
-    }
-}
 

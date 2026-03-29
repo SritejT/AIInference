@@ -9,8 +9,9 @@ set(CMAKE_BUILD_TYPE "Release")
 
 
 add_library(AIInference_lib STATIC
-    src/tensors.cpp
-    src/basic_tensors.cpp
+    src/tensors/itensor.cpp
+    src/tensors/basic_tensor.cpp
+    src/tensors/fast_tensor.cpp
     src/parse_safetensors.cpp
 )
 
