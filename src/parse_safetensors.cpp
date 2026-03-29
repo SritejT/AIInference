@@ -19,7 +19,6 @@ SafeTensorsParser::SafeTensorsParser(string fname) {
 }
 
 string SafeTensorsParser::read_header_data() {
-    uint64_t header_size;
     f.read(reinterpret_cast<char*>(&header_size), 8);
     string header_json(header_size, '\0');
     f.read(&header_json[0], header_size);
@@ -61,7 +60,7 @@ vector<FastTensor> SafeTensorsParser::parse_data(vector<TensorInfo>& info) {
     vector<FastTensor> tensors;
 
     for (auto& t : info) {
-        f.seekg(t.start);
+        f.seekg(8 + header_size + t.start);
         vector<float> d((t.end - t.start) / sizeof(float));
         f.read(reinterpret_cast<char*>(&d[0]), t.end - t.start);
 

@@ -17,6 +17,7 @@ class SafeTensorsParser {
 private:
 
     ifstream f;
+    uint64_t header_size;
 
     string read_header_data();
 
