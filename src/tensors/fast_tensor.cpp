@@ -8,26 +8,35 @@ FastTensor::FastTensor(size_t h, size_t w): ITensor(h, w) {}
 
 FastTensor::FastTensor(vector<float> d, size_t h, size_t w): ITensor(d, h, w) {}
 
-void FastTensor::process_work_queue(FastTensor* result, const FastTensor* other, queue<pair<size_t, size_t>>* work_queue) const {
+void FastTensor::process_rows(FastTensor* result, const FastTensor* other, size_t start_row, size_t end_row) const {
 
-    while (!work_queue->empty()) {
+    for (size_t i = start_row; i < end_row; i++) {
+        size_t j=0;
 
-        pair<size_t, size_t> next_pair = work_queue->front();
-        work_queue->pop();
+        for (; j+4 <= other->getWidth(); j+=4) {
+            
+            // Accumulates result[i][j:j+4]
+            float32x4_t acc = vdupq_n_f32(0.0f);
 
-        size_t i = next_pair.first;
-        size_t j = next_pair.second;
+            for (size_t k = 0; k < width; k++) {
+                float32x4_t va = vdupq_n_f32(data[i * width + k]);
+                float32x4_t vb = vld1q_f32(&other->data[k * other->getWidth() + j]);
+                acc = vmlaq_f32(acc, va, vb);
+            }
 
-        // Accumulates result[i][j:j+4]
-        float32x4_t acc = vdupq_n_f32(0.0f);
+            vst1q_f32(&result->data[i * other->getWidth() + j], acc);
 
-        for (size_t k = 0; k < width; k++) {
-            float32x4_t va = vdupq_n_f32(data[i * width + k]);
-            float32x4_t vb = vld1q_f32(&other->data[k * other->getWidth() + j]);
-            acc = vmlaq_f32(acc, va, vb);
         }
 
-        vst1q_f32(&result->data[i * other->getWidth() + j], acc);
+        // Do regular matrix mult for all j not covered by SIMD (i.e. if the j dimension is 
+        // not a multiple of 4)
+        for (; j < other->getWidth(); j++) {
+            float sum = 0.0f;
+            for (size_t k = 0; k < width; k++) {
+                sum += data[i * width + k] * other->data[k * other->getWidth() + j];
+            }
+            result->data[i * other->getWidth() + j] = sum;
+        }
         
     }
 }
@@ -37,44 +46,20 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
     shared_ptr<FastTensor> result(new FastTensor(height, other.getWidth()));
 
     size_t num_threads = thread::hardware_concurrency();
-    shared_ptr<vector<queue<pair<size_t, size_t>>>> work_queues(new vector<queue<pair<size_t, size_t>>>(num_threads));
-
-    for (size_t i = 0; i < height; i++) {
-
-        size_t j = 0;
-        size_t counter = 0;
-        
-        for (; j+4 < other.getWidth(); j+=4) {
-
-            (*work_queues)[counter].push(pair<size_t, size_t>(i, j));
-            counter = (counter + 1) % num_threads;
-        }
-
-        // Do regular matrix mult for all j not covered by SIMD (i.e. if the j dimension is 
-        // not a multiple of 4)
-        for (; j < other.getWidth(); j++) {
-            float sum = 0.0f;
-            for (size_t k = 0; k < width; k++) {
-                sum += data[i * width + k] * other.data[k * other.getWidth() + j];
-            }
-            result->data[i * other.getWidth() + j] = sum;
-        }
-        
-    }
 
     vector<thread> threads;
 
     for (size_t i = 0; i < num_threads; i++) {
 
-        queue<pair<size_t, size_t>>* wq = &(*work_queues)[i];
-
         threads.push_back(thread(
-            &FastTensor::process_work_queue,
+            &FastTensor::process_rows,
             this,
             result.get(), 
-            &other, 
-            wq
+            &other,
+            i * height / num_threads,
+            (i + 1) * height / num_threads
         ));
+
     }
 
     for (auto& t : threads) {
