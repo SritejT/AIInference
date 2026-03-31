@@ -5,8 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64")
-set(CMAKE_BUILD_TYPE "Release")
-
+set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+add_compile_options(-fno-omit-frame-pointer)
+add_compile_options(-march=armv8.4-a+simd)
 
 add_library(AIInference_lib STATIC
     src/tensors/itensor.cpp
@@ -36,16 +37,10 @@ target_compile_options(base PRIVATE
     -Wall -Wextra -Wpedantic
 )
 
-# --- Testing ---
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG        v1.15.2
-)
 
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+Include(FetchContent)
 
-enable_testing()
 add_subdirectory(tests)
+add_subdirectory(benchmarks)
+
+

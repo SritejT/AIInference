@@ -2,6 +2,8 @@
 #include "fast_tensor.h"
 #include <arm_neon.h>
 #include <thread>
+#include <memory>
+
 using namespace std;
 
 FastTensor::FastTensor(size_t h, size_t w): ITensor(h, w) {}
@@ -10,32 +12,33 @@ FastTensor::FastTensor(vector<float> d, size_t h, size_t w): ITensor(d, h, w) {}
 
 void FastTensor::process_rows(FastTensor* result, const FastTensor* other, size_t start_row, size_t end_row) const {
 
+    size_t new_width = other->getWidth();
     for (size_t i = start_row; i < end_row; i++) {
         size_t j=0;
 
-        for (; j+4 <= other->getWidth(); j+=4) {
+        for (; j+4 <= new_width; j+=4) {
             
             // Accumulates result[i][j:j+4]
             float32x4_t acc = vdupq_n_f32(0.0f);
 
             for (size_t k = 0; k < width; k++) {
                 float32x4_t va = vdupq_n_f32(data[i * width + k]);
-                float32x4_t vb = vld1q_f32(&other->data[k * other->getWidth() + j]);
+                float32x4_t vb = vld1q_f32(&other->data[k * new_width + j]);
                 acc = vmlaq_f32(acc, va, vb);
             }
 
-            vst1q_f32(&result->data[i * other->getWidth() + j], acc);
+            vst1q_f32(&result->data[i * new_width + j], acc);
 
         }
 
         // Do regular matrix mult for all j not covered by SIMD (i.e. if the j dimension is 
         // not a multiple of 4)
-        for (; j < other->getWidth(); j++) {
+        for (; j < new_width; j++) {
             float sum = 0.0f;
             for (size_t k = 0; k < width; k++) {
-                sum += data[i * width + k] * other->data[k * other->getWidth() + j];
+                sum += data[i * width + k] * other->data[k * new_width + j];
             }
-            result->data[i * other->getWidth() + j] = sum;
+            result->data[i * new_width + j] = sum;
         }
         
     }
