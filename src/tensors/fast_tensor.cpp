@@ -46,7 +46,7 @@ void FastTensor::process_rows(FastTensor* result, const FastTensor* other, size_
 
 FastTensor FastTensor::operator*(const FastTensor& other) const {
     
-    shared_ptr<FastTensor> result(new FastTensor(height, other.getWidth()));
+    FastTensor result(height, other.getWidth());
 
     size_t num_threads = thread::hardware_concurrency();
 
@@ -57,7 +57,7 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
         threads.push_back(thread(
             &FastTensor::process_rows,
             this,
-            result.get(), 
+            &result, 
             &other,
             i * height / num_threads,
             (i + 1) * height / num_threads
@@ -69,9 +69,7 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
         t.join();
     }
 
-    FastTensor result_copy = *result;
-
-    return result_copy;
+    return result;
 }
 
 FastTensor FastTensor::operator+(const FastTensor& other) const {
