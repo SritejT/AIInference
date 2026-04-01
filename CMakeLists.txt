@@ -10,9 +10,10 @@ add_compile_options(-fno-omit-frame-pointer)
 add_compile_options(-march=armv8.4-a+simd)
 
 add_library(AIInference_lib STATIC
-    src/tensors/itensor.cpp
+    src/tensors/tensor.cpp
     src/tensors/basic_tensor.cpp
     src/tensors/fast_tensor.cpp
+    src/tensors/strategies/basic_tensor_strategy.cpp
     src/parse_safetensors.cpp
 )
 

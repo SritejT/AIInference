@@ -5,9 +5,9 @@
 
 using namespace std;
 
-FastTensor::FastTensor(size_t h, size_t w): ITensor(h, w) {}
+FastTensor::FastTensor(size_t h, size_t w): Tensor(h, w) {}
 
-FastTensor::FastTensor(vector<float> d, size_t h, size_t w): ITensor(d, h, w) {}
+FastTensor::FastTensor(vector<float> d, size_t h, size_t w): Tensor(d, h, w) {}
 
 void FastTensor::process_mult_rows(FastTensor* result, const FastTensor* other, size_t start_row, size_t end_row) const {
 

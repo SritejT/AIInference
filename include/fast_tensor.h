@@ -1,9 +1,9 @@
 #pragma once
-#include "itensor.h"
+#include "tensor.h"
 
 using namespace std;
 
-class FastTensor : public ITensor {
+class FastTensor : public Tensor {
 private:
     void process_mult_rows(FastTensor* result, const FastTensor* other, size_t start_row, size_t end_row) const;
     

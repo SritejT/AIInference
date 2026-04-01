@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
-#include "itensor.h"
+#include "tensor.h"
 
 using namespace std;
 
-class BasicTensor : public ITensor {
+class BasicTensor : public Tensor {
 public:
     BasicTensor(vector<float> d, size_t h, size_t w);
     BasicTensor(size_t h, size_t w);
