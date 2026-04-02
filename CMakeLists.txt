@@ -14,6 +14,7 @@ add_library(AIInference_lib STATIC
     src/tensors/basic_tensor.cpp
     src/tensors/fast_tensor.cpp
     src/tensors/strategies/basic_tensor_strategy.cpp
+    src/tensors/strategies/concurrent_tensor_strategy.cpp
     src/parse_safetensors.cpp
 )
 

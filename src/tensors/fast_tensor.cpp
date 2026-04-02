@@ -2,6 +2,7 @@
 #include "fast_tensor.h"
 #include <arm_neon.h>
 #include <thread>
+#include "strategies/concurrent_tensor_strategy.h"
 
 using namespace std;
 
@@ -66,53 +67,18 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
     
     FastTensor result(height, other.getWidth());
 
-    size_t num_threads = thread::hardware_concurrency();
-
-    vector<thread> threads;
-
-    for (size_t i = 0; i < num_threads; i++) {
-
-        threads.push_back(thread(
-            &FastTensor::process_mult_rows,
-            this,
-            &result, 
-            &other,
-            i * height / num_threads,
-            (i + 1) * height / num_threads
-        ));
-
-    }
-
-    for (auto& t : threads) {
-        t.join();
-    }
+    ConcurrentTensorStrategy strategy;
+    strategy.mult(this, &other, &result);
 
     return result;
 }
 
 FastTensor FastTensor::operator+(const FastTensor& other) const {
 
-    size_t num_threads = thread::hardware_concurrency();
+    FastTensor result(this->height, this->width);
 
-    vector<thread> threads;
-
-    FastTensor result = *this;
-
-    for (size_t i = 0; i < num_threads; i++) {
-        threads.push_back(thread(
-            &FastTensor::process_add_rows,
-            this,
-            &result,
-            &other,
-            i * height / num_threads,
-            (i + 1) * height / num_threads
-            
-        ));
-    }
-
-    for (auto& t : threads) {
-        t.join();
-    }
+    ConcurrentTensorStrategy strategy;
+    strategy.add(this, &other, &result);
 
     return result;
 }
