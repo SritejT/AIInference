@@ -1,8 +1,9 @@
 #include <vector>
+#include <memory>
 #include "fast_tensor.h"
 #include <arm_neon.h>
-#include <thread>
 #include "strategies/concurrent_tensor_strategy.h"
+#include "strategies/basic_tensor_strategy.h"
 
 using namespace std;
 
@@ -14,8 +15,16 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
     
     FastTensor result(height, other.getWidth());
 
-    ConcurrentTensorStrategy strategy;
-    strategy.mult(this, &other, &result);
+    unique_ptr<TensorStrategy> strategy;
+    size_t operations = height * other.getWidth() * width;
+
+    if (operations > 1000000) {
+        strategy = make_unique<ConcurrentTensorStrategy>();
+    } else {
+        strategy = make_unique<BasicTensorStrategy>();
+    }
+
+    strategy->mult(this, &other, &result);
 
     return result;
 }
@@ -24,8 +33,16 @@ FastTensor FastTensor::operator+(const FastTensor& other) const {
 
     FastTensor result(this->height, this->width);
 
-    ConcurrentTensorStrategy strategy;
-    strategy.add(this, &other, &result);
+    unique_ptr<TensorStrategy> strategy;
+    size_t operations = height * other.getWidth();
+
+    if (operations > 1000000) {
+        strategy = make_unique<ConcurrentTensorStrategy>();
+    } else {
+        strategy = make_unique<BasicTensorStrategy>();
+    }
+
+    strategy->add(this, &other, &result);
 
     return result;
 }
