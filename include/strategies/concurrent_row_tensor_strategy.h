@@ -1,7 +1,7 @@
 #pragma once
 #include "tensor_strategy.h"
 
-class ConcurrentTensorStrategy : public TensorStrategy {
+class ConcurrentRowTensorStrategy : public TensorStrategy {
 private:
     void process_mult_rows(
             const Tensor* A,

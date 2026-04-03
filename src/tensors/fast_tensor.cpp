@@ -3,7 +3,8 @@
 #include "fast_tensor.h"
 #include <arm_neon.h>
 #include <format>
-#include "strategies/concurrent_tensor_strategy.h"
+#include "strategies/concurrent_row_tensor_strategy.h"
+#include "strategies/concurrent_blocked_tensor_strategy.h"
 #include "strategies/basic_tensor_strategy.h"
 
 using namespace std;
@@ -25,7 +26,7 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
     size_t operations = height * other.getWidth() * width;
 
     if (operations > 1000000) {
-        strategy = make_unique<ConcurrentTensorStrategy>();
+        strategy = make_unique<ConcurrentRowTensorStrategy>();
     } else {
         strategy = make_unique<BasicTensorStrategy>();
     }
@@ -49,7 +50,7 @@ FastTensor FastTensor::operator+(const FastTensor& other) const {
     size_t operations = height * other.getWidth();
 
     if (operations > 1000000) {
-        strategy = make_unique<ConcurrentTensorStrategy>();
+        strategy = make_unique<ConcurrentRowTensorStrategy>();
     } else {
         strategy = make_unique<BasicTensorStrategy>();
     }

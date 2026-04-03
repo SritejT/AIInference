@@ -1,17 +1,16 @@
-#include "strategies/concurrent_tensor_strategy.h"
+#include "strategies/concurrent_row_tensor_strategy.h"
 #include <arm_neon.h>
 #include <thread>
 #include <vector>
 
 
-void ConcurrentTensorStrategy::process_mult_rows(
+void ConcurrentRowTensorStrategy::process_mult_rows(
         const Tensor* A,
         const Tensor* B,
         Tensor* result,
         size_t start_row,
         size_t end_row) const {
 
-    size_t new_height = B->getHeight();
     size_t new_width = B->getWidth();
 
     size_t A_width = A->getWidth();
@@ -47,7 +46,7 @@ void ConcurrentTensorStrategy::process_mult_rows(
     }
 }
 
-void ConcurrentTensorStrategy::process_add_rows(
+void ConcurrentRowTensorStrategy::process_add_rows(
         const Tensor* A,
         const Tensor* B,
         Tensor* result,
@@ -72,7 +71,7 @@ void ConcurrentTensorStrategy::process_add_rows(
 }
 
 
-void ConcurrentTensorStrategy::add(
+void ConcurrentRowTensorStrategy::add(
         const Tensor* A,
         const Tensor* B,
         Tensor* result) const {
@@ -85,7 +84,7 @@ void ConcurrentTensorStrategy::add(
     for (size_t i = 0; i < num_threads; i++) {
 
         threads.push_back(thread(
-            &ConcurrentTensorStrategy::process_add_rows,
+            &ConcurrentRowTensorStrategy::process_add_rows,
             this,
             A, 
             B,
@@ -101,7 +100,7 @@ void ConcurrentTensorStrategy::add(
     }
 }
 
-void ConcurrentTensorStrategy::mult(
+void ConcurrentRowTensorStrategy::mult(
         const Tensor* A,
         const Tensor* B,
         Tensor* result) const {
@@ -114,7 +113,7 @@ void ConcurrentTensorStrategy::mult(
     for (size_t i = 0; i < num_threads; i++) {
 
         threads.push_back(thread(
-            &ConcurrentTensorStrategy::process_mult_rows,
+            &ConcurrentRowTensorStrategy::process_mult_rows,
             this,
             A, 
             B,

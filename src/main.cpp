@@ -1,42 +1,17 @@
-#include <chrono>
-#include <iostream>
 #include <cstring>
 #include "fast_tensor.h"
-#include "parse_safetensors.h"
 
 using namespace std;
 
 int main() {
     
-    chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
+    vector<float> a = vector<float>(1048576, 1.0f);
+    vector<float> b = vector<float>(1048576, 1.0f);
 
-    SafeTensorsParser parser("models/model.safetensors");
-    
-    vector<FastTensor> tensors = parser.parse();
+    FastTensor A = FastTensor(a, 1024, 1024);
+    FastTensor B = FastTensor(b, 1024, 1024);
 
-    chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
-    auto parse_duration = chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
-    cout << "Parse Time: " << parse_duration << " ns" << endl;
-
-    // Test tensor addition and multiplication
-    
-    t1 = chrono::high_resolution_clock::now();
-
-    vector<float> input(784, 0.1f);
-    FastTensor input_tensor = FastTensor(input, 784, 1);
-
-    FastTensor acc = tensors[1] * input_tensor;
-    acc = acc + tensors[0];
-
-    acc = tensors[3] * acc;
-    acc = acc + tensors[2];
-
-    acc = tensors[5] * acc;
-    acc = acc + tensors[4];
-
-    t2 = chrono::high_resolution_clock::now();
-    auto math_duration = chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count();
-    cout << "Math Time: " << math_duration << " ns" << endl;
+    FastTensor result = A * B;
 
     return 0;
 }
