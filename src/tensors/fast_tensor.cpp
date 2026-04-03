@@ -2,6 +2,7 @@
 #include <memory>
 #include "fast_tensor.h"
 #include <arm_neon.h>
+#include <format>
 #include "strategies/concurrent_tensor_strategy.h"
 #include "strategies/basic_tensor_strategy.h"
 
@@ -12,7 +13,12 @@ FastTensor::FastTensor(size_t h, size_t w): Tensor(h, w) {}
 FastTensor::FastTensor(vector<float> d, size_t h, size_t w): Tensor(d, h, w) {}
 
 FastTensor FastTensor::operator*(const FastTensor& other) const {
-    
+
+    if (width != other.height) {
+        string error_msg = format("Matrix multiplication dimensions do not match: [{}, {}] x [{}, {}]", height, width, other.getHeight(), other.getWidth());
+        throw runtime_error(error_msg);
+    }   
+
     FastTensor result(height, other.getWidth());
 
     unique_ptr<TensorStrategy> strategy;
@@ -30,6 +36,12 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
 }
 
 FastTensor FastTensor::operator+(const FastTensor& other) const {
+
+    if (width != other.width || height != other.height) {
+        string error_msg = format("Matrix addition dimensions do not match: [{}, {}] + [{}, {}]", height, width, other.getHeight(), other.getWidth());
+
+        throw runtime_error("Matrix addition dimensions do not match");
+    }
 
     FastTensor result(this->height, this->width);
 

@@ -130,3 +130,13 @@ TEST(MatrixMultTest, LargeValuesMatrixMultTest) {
         EXPECT_EQ(r, 2e9f);
     }
 }
+
+TEST(MatrixMultTest, InvalidMultTest) {
+    vector<float> a = vector<float>(1000000, 1.0f);
+    vector<float> b = vector<float>(1000000, 1.0f);
+
+    FastTensor A = FastTensor(a, 1, 1000000);
+    FastTensor B = FastTensor(b, 1, 1000000);
+
+    ASSERT_THROW(A * B, std::runtime_error);
+}

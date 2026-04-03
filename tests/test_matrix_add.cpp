@@ -124,3 +124,13 @@ TEST(MatrixAddTest, LargeValuesMatrixAddTest) {
         EXPECT_EQ(r, 30000.0f);
     }
 }
+
+TEST(MatrixAddTest, InvalidAddTest) {
+    vector<float> a = vector<float>(100, 20000.0f);
+    vector<float> b = vector<float>(100, 10000.0f);
+
+    FastTensor A = FastTensor(a, 10, 10);
+    FastTensor B = FastTensor(b, 100, 1);
+
+    ASSERT_THROW(A + B, std::runtime_error);
+}

@@ -5,12 +5,22 @@
 using namespace std;
 
 Tensor::Tensor(vector<float> d, size_t h, size_t w) {
+
+    if (d.size() != h * w || h <= 0 || w <= 0) {
+        throw runtime_error("Invalid tensor size");
+    }
+
     width = w;
     height = h;
     data = d;
 }
 
 Tensor::Tensor(size_t h, size_t w) {
+
+    if (h <= 0 || w <= 0) {
+        throw runtime_error("Invalid tensor size");
+    }
+
     width = w;
     height = h;
     data.resize(h * w);
