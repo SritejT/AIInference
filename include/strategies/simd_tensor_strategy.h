@@ -1,7 +1,8 @@
-#include "strategies/simd_tensor_strategy.h"
+#pragma once
+#include <strategies/tensor_strategy.h>
 
-class ConcurrentBlockedTensorStrategy: public SimdTensorStrategy {
-private:
+class SimdTensorStrategy : public TensorStrategy {
+protected:
     void process_mult_block(
             const Tensor* A,
             const Tensor* B,
@@ -19,15 +20,8 @@ private:
             size_t start_col,
             size_t end_row,
             size_t end_col) const; 
-    
-public:
-    void add(
-            const Tensor *A,
-            const Tensor *B,
-            Tensor *result) const override; 
 
-    void mult(
-            const Tensor *A,
-            const Tensor *B,
-            Tensor *result) const override; 
-};
+public:
+    virtual void add(const Tensor* A, const Tensor* B, Tensor* result) const = 0;
+    virtual void mult(const Tensor* A, const Tensor* B, Tensor* result) const = 0;
+}; 

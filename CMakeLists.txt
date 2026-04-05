@@ -9,15 +9,9 @@ set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 add_compile_options(-fno-omit-frame-pointer)
 add_compile_options(-march=armv8.4-a+simd)
 
-add_library(AIInference_lib STATIC
-    src/tensors/tensor.cpp
-    src/tensors/basic_tensor.cpp
-    src/tensors/fast_tensor.cpp
-    src/tensors/strategies/basic_tensor_strategy.cpp
-    src/tensors/strategies/concurrent_row_tensor_strategy.cpp
-    src/tensors/strategies/concurrent_blocked_tensor_strategy.cpp
-    src/parse_safetensors.cpp
-)
+file(GLOB_RECURSE lib_sources "src/*.cpp")
+
+add_library(AIInference_lib STATIC ${lib_sources})
 
 target_include_directories(AIInference_lib PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
