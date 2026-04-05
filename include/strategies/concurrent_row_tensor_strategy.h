@@ -5,8 +5,8 @@ class ConcurrentRowTensorStrategy : public SimdTensorStrategy {
 
 public:
 
-    void add(const Tensor* A, const Tensor* B, Tensor* result) const; 
-    void mult(const Tensor* A, const Tensor* B, Tensor* result) const; 
+    void add(const Tensor* A, const Tensor* B, Tensor* result) const override; 
+    void mult(const Tensor* A, const Tensor* B, Tensor* result) const override; 
 
 };
 

@@ -6,6 +6,7 @@
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/concurrent_blocked_tensor_strategy.h"
 #include "strategies/basic_tensor_strategy.h"
+#include "strategies/basic_simd_tensor_strategy.h"
 
 using namespace std;
 
@@ -25,12 +26,16 @@ FastTensor FastTensor::operator*(const FastTensor& other) const {
     unique_ptr<TensorStrategy> strategy;
     size_t operations = height * other.getWidth() * width;
 
+    /*
     if (operations > 1000000) {
         strategy = make_unique<ConcurrentRowTensorStrategy>();
     } else {
         strategy = make_unique<BasicTensorStrategy>();
     }
+    */
 
+    strategy = make_unique<BasicSimdTensorStrategy>();
+    
     strategy->mult(this, &other, &result);
 
     return result;
@@ -49,12 +54,15 @@ FastTensor FastTensor::operator+(const FastTensor& other) const {
     unique_ptr<TensorStrategy> strategy;
     size_t operations = height * other.getWidth();
 
+    /*
     if (operations > 1000000) {
         strategy = make_unique<ConcurrentRowTensorStrategy>();
     } else {
         strategy = make_unique<BasicTensorStrategy>();
     }
+    */
 
+    strategy = make_unique<BasicSimdTensorStrategy>();
     strategy->add(this, &other, &result);
 
     return result;
