@@ -3,6 +3,7 @@
 #include "strategies/basic_simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/concurrent_blocked_tensor_strategy.h"
+#include "strategies/optimised_tensor_strategy.h"
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -151,6 +152,7 @@ INSTANTIATE_TEST_CASE_P(TestAllMultStrategies, MatrixMultTest, testing::Values(
             make_shared<BasicTensorStrategy>(),
             make_shared<BasicSimdTensorStrategy>(),
             make_shared<ConcurrentRowTensorStrategy>(),
-            make_shared<ConcurrentBlockedTensorStrategy>()));
+            make_shared<ConcurrentBlockedTensorStrategy>(),
+            make_shared<OptimisedTensorStrategy>()));
 
 

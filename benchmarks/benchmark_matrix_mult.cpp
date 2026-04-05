@@ -6,6 +6,7 @@
 #include "strategies/basic_simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/concurrent_blocked_tensor_strategy.h"
+#include "strategies/optimised_tensor_strategy.h"
 
 using namespace std;
 
@@ -35,10 +36,12 @@ BENCHMARK(TensorSquareMatMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2,
 BENCHMARK(TensorSquareMatMul<BasicSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorSquareMatMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorSquareMatMul<ConcurrentBlockedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 
 BENCHMARK(TensorMatxVecMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorMatxVecMul<BasicSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorMatxVecMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorMatxVecMul<ConcurrentBlockedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 
 BENCHMARK_MAIN();

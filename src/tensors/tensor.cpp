@@ -43,7 +43,7 @@ vector<float>::const_iterator Tensor::end() {
 }
 
 Tensor Tensor::operator+(const Tensor& other) const {
-    if (width != other.width || height != other.height) {
+    if ((width != other.width) || (height != other.height)) {
         throw runtime_error("Invalid tensor sizes");
     }
 
