@@ -1,5 +1,7 @@
 #include "strategies/basic_simd_tensor_strategy.h"
+#include "tensor.h"
 #include <arm_neon.h>
+#include <cstddef>
 
 void BasicSimdTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* result) const {
 

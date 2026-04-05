@@ -1,10 +1,10 @@
-#include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #include "rapidjson/document.h"
-#include "fast_tensor.h"
+#include "tensor.h"
 #include "parse_safetensors.h"
+#include "strategies/concurrent_row_tensor_strategy.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -55,25 +55,26 @@ vector<TensorInfo> SafeTensorsParser::parse_header(string header_json) {
     return info;
 }
 
-vector<FastTensor> SafeTensorsParser::parse_data(vector<TensorInfo>& info) {
+vector<Tensor> SafeTensorsParser::parse_data(vector<TensorInfo>& info) {
     // Read tensors from safetensors file
-    vector<FastTensor> tensors;
+    vector<Tensor> tensors;
 
     for (auto& t : info) {
         f.seekg(8 + header_size + t.start);
         vector<float> d((t.end - t.start) / sizeof(float));
         f.read(reinterpret_cast<char*>(&d[0]), t.end - t.start);
 
-        tensors.push_back(FastTensor(d, t.shape[0], (
-                        t.shape.size() > 1 ? t.shape[1] : 1
-                        )
-                    ));
+        tensors.push_back(Tensor(
+                    d, 
+                    t.shape[0], 
+                    (t.shape.size() > 1 ? t.shape[1] : 1), 
+                    make_shared<ConcurrentRowTensorStrategy>()));
     }
 
     return tensors; 
 }
 
-vector<FastTensor> SafeTensorsParser::parse() {
+vector<Tensor> SafeTensorsParser::parse() {
 
     string header_json = read_header_data();
     vector<TensorInfo> info = parse_header(header_json);

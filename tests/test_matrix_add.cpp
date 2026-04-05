@@ -1,13 +1,20 @@
-#include "fast_tensor.h"
+#include "tensor.h"
+#include "strategies/basic_tensor_strategy.h"
+#include "strategies/basic_simd_tensor_strategy.h"
+#include "strategies/concurrent_row_tensor_strategy.h"
+#include "strategies/concurrent_blocked_tensor_strategy.h"
+
 #include <gtest/gtest.h>
 
 using namespace std;
 
-TEST(MatrixAddTest, SmallSquareMatrixAddTest) {
-    FastTensor a = FastTensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2);
-    FastTensor b = FastTensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2);
+class MatrixAddTest : public testing::TestWithParam<shared_ptr<TensorStrategy>> {};
 
-    FastTensor result = a + b;
+TEST_P(MatrixAddTest, SmallSquareMatrixAddTest) {
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, shared_ptr<TensorStrategy>(GetParam()));
+
+    Tensor result = a + b;
     ASSERT_EQ(result.getWidth(), 2);
     ASSERT_EQ(result.getHeight(), 2);
 
@@ -20,11 +27,11 @@ TEST(MatrixAddTest, SmallSquareMatrixAddTest) {
     }
 }
 
-TEST(MatrixAddTest, SmallRectMatrixAddTest) {
-    FastTensor a = FastTensor({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 2, 3);
-    FastTensor b = FastTensor({7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 3);
+TEST_P(MatrixAddTest, SmallRectMatrixAddTest) {
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 2, 3, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor b = Tensor({7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 3, shared_ptr<TensorStrategy>(GetParam()));
 
-    FastTensor result = a + b;
+    Tensor result = a + b;
     ASSERT_EQ(result.getWidth(), 3);
     ASSERT_EQ(result.getHeight(), 2);
 
@@ -37,7 +44,7 @@ TEST(MatrixAddTest, SmallRectMatrixAddTest) {
     }
 }
 
-TEST(MatrixAddTest, LargeSquareMatrixAddTest) {
+TEST_P(MatrixAddTest, LargeSquareMatrixAddTest) {
     vector<float> a(1000000);
     vector<float> b(1000000);
     for (unsigned long i = 0; i < 1000000; i++) {
@@ -45,10 +52,10 @@ TEST(MatrixAddTest, LargeSquareMatrixAddTest) {
         b[i] = static_cast<float>(i);
     }
 
-    FastTensor A = FastTensor(a, 1000, 1000);
-    FastTensor B = FastTensor(b, 1000, 1000);
+    Tensor A = Tensor(a, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
 
-    FastTensor result = A + B;
+    Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1000);
     ASSERT_EQ(result.getHeight(), 1000);
 
@@ -59,14 +66,14 @@ TEST(MatrixAddTest, LargeSquareMatrixAddTest) {
     }
 }
 
-TEST(MatrixAddTest, LargeRectMatrixAddTest) {
+TEST_P(MatrixAddTest, LargeRectMatrixAddTest) {
     vector<float> a(1000000, 1.0f);
     vector<float> b(1000000, 1.0f);
 
-    FastTensor A = FastTensor(a, 1, 1000000);
-    FastTensor B = FastTensor(b, 1, 1000000);
+    Tensor A = Tensor(a, 1, 1000000, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1, 1000000, shared_ptr<TensorStrategy>(GetParam()));
 
-    FastTensor result = A + B;
+    Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1000000);
     ASSERT_EQ(result.getHeight(), 1);
 
@@ -77,14 +84,14 @@ TEST(MatrixAddTest, LargeRectMatrixAddTest) {
 
 // Test whether addition works with matrices whose number of elements
 // is not divisible by the block size or number of SIMD registers
-TEST(MatrixAddTest, PrimeSizeMatrixAddTest) {
+TEST_P(MatrixAddTest, PrimeSizeMatrixAddTest) {
     vector<float> a(67, 1.0f);
     vector<float> b(67, 2.0f);
 
-    FastTensor A = FastTensor(a, 67, 1);
-    FastTensor B = FastTensor(b, 67, 1);
+    Tensor A = Tensor(a, 67, 1, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 67, 1, shared_ptr<TensorStrategy>(GetParam()));
 
-    FastTensor result = A + B;
+    Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1);
     ASSERT_EQ(result.getHeight(), 67);
 
@@ -93,14 +100,14 @@ TEST(MatrixAddTest, PrimeSizeMatrixAddTest) {
     }
 }
 
-TEST(MatrixAddTest, NegativeValuesMatrixAddTest) {
+TEST_P(MatrixAddTest, NegativeValuesMatrixAddTest) {
     vector<float> a = vector<float>(1000000, -3.0f);
     vector<float> b = vector<float>(1000000, -67.0f);
 
-    FastTensor A = FastTensor(a, 1000, 1000);
-    FastTensor B = FastTensor(b, 1000, 1000);
+    Tensor A = Tensor(a, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
 
-    FastTensor result = A + B;
+    Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1000);
     ASSERT_EQ(result.getHeight(), 1000);
 
@@ -109,14 +116,14 @@ TEST(MatrixAddTest, NegativeValuesMatrixAddTest) {
     }
 }
 
-TEST(MatrixAddTest, LargeValuesMatrixAddTest) {
+TEST_P(MatrixAddTest, LargeValuesMatrixAddTest) {
     vector<float> a = vector<float>(100, 20000.0f);
     vector<float> b = vector<float>(100, 10000.0f);
 
-    FastTensor A = FastTensor(a, 10, 10);
-    FastTensor B = FastTensor(b, 10, 10);
+    Tensor A = Tensor(a, 10, 10, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 10, 10, shared_ptr<TensorStrategy>(GetParam()));
 
-    FastTensor result = A + B;
+    Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 10);
     ASSERT_EQ(result.getHeight(), 10);
 
@@ -125,12 +132,20 @@ TEST(MatrixAddTest, LargeValuesMatrixAddTest) {
     }
 }
 
-TEST(MatrixAddTest, InvalidAddTest) {
+TEST_P(MatrixAddTest, InvalidAddTest) {
     vector<float> a = vector<float>(100, 20000.0f);
     vector<float> b = vector<float>(100, 10000.0f);
 
-    FastTensor A = FastTensor(a, 10, 10);
-    FastTensor B = FastTensor(b, 100, 1);
+    Tensor A = Tensor(a, 10, 10, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 100, 1, shared_ptr<TensorStrategy>(GetParam()));
 
     ASSERT_THROW(A + B, std::runtime_error);
 }
+
+INSTANTIATE_TEST_CASE_P(TestAllAddStrategies, MatrixAddTest, testing::Values(
+            make_shared<BasicTensorStrategy>(),
+            make_shared<BasicSimdTensorStrategy>(),
+            make_shared<ConcurrentRowTensorStrategy>(),
+            make_shared<ConcurrentBlockedTensorStrategy>()));
+
+

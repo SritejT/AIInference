@@ -1,21 +1,21 @@
 #include "tensor.h"
 #include <vector>
 #include <iostream>
+#include "strategies/tensor_strategy.h"
 
 using namespace std;
 
-Tensor::Tensor(vector<float> d, size_t h, size_t w) {
+Tensor::Tensor(vector<float> d, size_t h, size_t w, shared_ptr<TensorStrategy> s) :
+    width(w), height(h), data(d), strategy(s) {
 
     if (d.size() != h * w || h <= 0 || w <= 0) {
         throw runtime_error("Invalid tensor size");
     }
 
-    width = w;
-    height = h;
-    data = d;
 }
 
-Tensor::Tensor(size_t h, size_t w) {
+Tensor::Tensor(size_t h, size_t w, shared_ptr<TensorStrategy> s) : 
+    width(w), height(h), strategy(s) {
 
     if (h <= 0 || w <= 0) {
         throw runtime_error("Invalid tensor size");
@@ -40,6 +40,30 @@ vector<float>::const_iterator Tensor::begin() {
 
 vector<float>::const_iterator Tensor::end() {
     return data.end();
+}
+
+Tensor Tensor::operator+(const Tensor& other) const {
+    if (width != other.width || height != other.height) {
+        throw runtime_error("Invalid tensor sizes");
+    }
+
+    Tensor result(height, width, strategy);
+    for (size_t i = 0; i < height * width; i++) {
+        result.data[i] = data[i] + other.data[i];
+    }
+
+    return result;
+}
+
+Tensor Tensor::operator*(const Tensor& other) const {
+    if (width != other.height) {
+        throw runtime_error("Invalid tensor sizes");
+    }
+
+    Tensor result(height, other.width, strategy);
+    strategy->mult(this, &other, &result);
+    return result;
+
 }
 
 void Tensor::display() const {

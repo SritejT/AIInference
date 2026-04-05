@@ -1,54 +1,44 @@
 #include <benchmark/benchmark.h>
 #include <vector>
-#include "fast_tensor.h"
-#include "basic_tensor.h"
+#include <memory>
+#include "tensor.h"
+#include "strategies/basic_tensor_strategy.h"
+#include "strategies/basic_simd_tensor_strategy.h"
+#include "strategies/concurrent_row_tensor_strategy.h"
+#include "strategies/concurrent_blocked_tensor_strategy.h"
 
 using namespace std;
 
-static void BM_FastTensorSquareMatMul(benchmark::State& state) {
+template <typename Strategy>
+static void TensorSquareMatMul(benchmark::State& state) {
     int n = state.range(0);
-    FastTensor a(vector<float>(n * n, 1.0f), n, n);
-    FastTensor b(vector<float>(n * n, 1.0f), n, n);
+    Tensor a(vector<float>(n * n, 1.0f), n, n, make_shared<Strategy>());
+    Tensor b(vector<float>(n * n, 1.0f), n, n, make_shared<Strategy>());
     for (auto _ : state) {
-        FastTensor c = a * b;
+        Tensor c = a * b;
         benchmark::DoNotOptimize(c);
     }
 }
 
-static void BM_BasicTensorSquareMatMul(benchmark::State& state) {
+template <typename Strategy>
+static void TensorMatxVecMul(benchmark::State& state) {
     int n = state.range(0);
-    BasicTensor a(vector<float>(n * n, 1.0f), n, n);
-    BasicTensor b(vector<float>(n * n, 1.0f), n, n);
+    Tensor a(vector<float>(n * n, 1.0f), n, n, make_shared<Strategy>());
+    Tensor b(vector<float>(n, 1.0f), n, 1, make_shared<Strategy>());
     for (auto _ : state) {
-        BasicTensor c = a * b;
+        Tensor c = a * b;
         benchmark::DoNotOptimize(c);
     }
 }
 
-static void BM_FastTensorMatxVecMul(benchmark::State& state) {
-    int n = state.range(0);
-    FastTensor a(vector<float>(n * n, 1.0f), n, n);
-    FastTensor b(vector<float>(n, 1.0f), n, 1);
-    for (auto _ : state) {
-        FastTensor c = a * b;
-        benchmark::DoNotOptimize(c);
-    }
-}
+BENCHMARK(TensorSquareMatMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<BasicSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<ConcurrentBlockedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 
-static void BM_BasicTensorMatxVecMul(benchmark::State& state) {
-    int n = state.range(0);
-    BasicTensor a(vector<float>(n * n, 1.0f), n, n);
-    BasicTensor b(vector<float>(n, 1.0f), n, 1);
-    for (auto _ : state) {
-        BasicTensor c = a * b;
-        benchmark::DoNotOptimize(c);
-    }
-}
-
-BENCHMARK(BM_FastTensorSquareMatMul)->RangeMultiplier(2)->Range(64, 1024);
-BENCHMARK(BM_BasicTensorSquareMatMul)->RangeMultiplier(2)->Range(64, 1024);
-
-BENCHMARK(BM_FastTensorMatxVecMul)->RangeMultiplier(2)->Range(64, 1024);
-BENCHMARK(BM_BasicTensorMatxVecMul)->RangeMultiplier(2)->Range(64, 1024);
+BENCHMARK(TensorMatxVecMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<BasicSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<ConcurrentBlockedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 
 BENCHMARK_MAIN();

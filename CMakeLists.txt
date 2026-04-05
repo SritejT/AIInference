@@ -19,21 +19,11 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
 )
 
-add_executable(base
-    src/run_basic_tensors.cpp
-)
-
 target_link_libraries(${PROJECT_NAME} PRIVATE AIInference_lib)
-target_link_libraries(base PRIVATE AIInference_lib)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall -Wextra -Wpedantic
 )
-
-target_compile_options(base PRIVATE
-    -Wall -Wextra -Wpedantic
-)
-
 
 Include(FetchContent)
 

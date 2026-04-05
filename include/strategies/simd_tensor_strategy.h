@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include <strategies/tensor_strategy.h>
 
 class SimdTensorStrategy : public TensorStrategy {
