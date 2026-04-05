@@ -25,4 +25,6 @@ protected:
 public:
     virtual void add(const Tensor* A, const Tensor* B, Tensor* result) const = 0;
     virtual void mult(const Tensor* A, const Tensor* B, Tensor* result) const = 0;
+
+    virtual ~SimdTensorStrategy() = default;
 }; 

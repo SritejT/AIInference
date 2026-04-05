@@ -144,10 +144,10 @@ TEST_P(MatrixAddTest, InvalidAddTest) {
 }
 
 INSTANTIATE_TEST_CASE_P(TestAllAddStrategies, MatrixAddTest, testing::Values(
-            make_shared<BasicTensorStrategy>(),
-            make_shared<BasicSimdTensorStrategy>(),
-            make_shared<ConcurrentRowTensorStrategy>(),
-            make_shared<ConcurrentBlockedTensorStrategy>(),
-            make_shared<OptimisedTensorStrategy>()));
+    make_shared<BasicTensorStrategy>(),
+    make_shared<BasicSimdTensorStrategy>(),
+    make_shared<ConcurrentRowTensorStrategy>(),
+    make_shared<ConcurrentBlockedTensorStrategy>(),
+    make_shared<OptimisedTensorStrategy>()));
 
 

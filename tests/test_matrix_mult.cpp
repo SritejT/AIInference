@@ -4,6 +4,7 @@
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/concurrent_blocked_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
+
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -145,14 +146,14 @@ TEST_P(MatrixMultTest, InvalidMultTest) {
     Tensor A = Tensor(a, 1, 1000000, shared_ptr<TensorStrategy>(GetParam()));
     Tensor B = Tensor(b, 1, 1000000, shared_ptr<TensorStrategy>(GetParam()));
 
-    ASSERT_THROW(A * B, std::runtime_error);
+    ASSERT_THROW(A * B, runtime_error);
 }
 
 INSTANTIATE_TEST_CASE_P(TestAllMultStrategies, MatrixMultTest, testing::Values(
-            make_shared<BasicTensorStrategy>(),
-            make_shared<BasicSimdTensorStrategy>(),
-            make_shared<ConcurrentRowTensorStrategy>(),
-            make_shared<ConcurrentBlockedTensorStrategy>(),
-            make_shared<OptimisedTensorStrategy>()));
+    make_shared<BasicTensorStrategy>(),
+    make_shared<BasicSimdTensorStrategy>(),
+    make_shared<ConcurrentRowTensorStrategy>(),
+    make_shared<ConcurrentBlockedTensorStrategy>(),
+    make_shared<OptimisedTensorStrategy>()));
 
 
