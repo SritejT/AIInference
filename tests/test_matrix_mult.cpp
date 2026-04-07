@@ -7,13 +7,11 @@
 
 #include <gtest/gtest.h>
 
-using namespace std;
-
-class MatrixMultTest : public testing::TestWithParam<shared_ptr<TensorStrategy>> {};
+class MatrixMultTest : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
 
 TEST_P(MatrixMultTest, SmallSquareMatrixMultTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, std::shared_ptr<TensorStrategy>(GetParam()));
 
     Tensor result = a * b;
     ASSERT_EQ(result.getWidth(), 2);
@@ -30,8 +28,8 @@ TEST_P(MatrixMultTest, SmallSquareMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, SmallRectMatrixMultTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 4, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 4, std::shared_ptr<TensorStrategy>(GetParam()));
 
     Tensor result = a * b;
     ASSERT_EQ(result.getWidth(), 4);
@@ -48,18 +46,18 @@ TEST_P(MatrixMultTest, SmallRectMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, LargeSquareMatrixMultTest) {
-    vector<float> a = vector<float>(1000000, 0.0f);
+    std::vector<float> a = std::vector<float>(1000000, 0.0f);
     for (unsigned long i=0; i<1000000; i+=1001) {
         a[i] = 1.0f;
     }
 
-    vector<float> b = vector<float>(1000000, 0.0f);
+    std::vector<float> b = std::vector<float>(1000000, 0.0f);
     for (unsigned long i=0; i<1000000; i++) {
         b[i] = static_cast<float>(i);
     }
 
-    Tensor A = Tensor(a, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 1000, 1000, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1000, 1000, std::shared_ptr<TensorStrategy>(GetParam()));
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 1000);
@@ -73,11 +71,11 @@ TEST_P(MatrixMultTest, LargeSquareMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, LargeRectMatrixMultTest) {
-    vector<float> a = vector<float>(1000000, 1.0f);
-    vector<float> b = vector<float>(1000000, 1.0f);
+    std::vector<float> a = std::vector<float>(1000000, 1.0f);
+    std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1, 1000000, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 1000000, 1, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 1, 1000000, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1000000, 1, std::shared_ptr<TensorStrategy>(GetParam()));
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 1);
@@ -92,11 +90,11 @@ TEST_P(MatrixMultTest, LargeRectMatrixMultTest) {
 // whose numbers of elements are not divisible by the block size or 
 // number of SIMD registers
 TEST_P(MatrixMultTest, PrimeSizeMatrixMultTest) {
-    vector<float> a = vector<float>(67, 1.0f);
-    vector<float> b = vector<float>(67, 1.0f);
+    std::vector<float> a = std::vector<float>(67, 1.0f);
+    std::vector<float> b = std::vector<float>(67, 1.0f);
 
-    Tensor A = Tensor(a, 67, 1, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 1, 67, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 67, 1, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1, 67, std::shared_ptr<TensorStrategy>(GetParam()));
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 67);
@@ -108,11 +106,11 @@ TEST_P(MatrixMultTest, PrimeSizeMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, NegativeValuesMatrixMultTest) {
-    vector<float> a = vector<float>(1000000, -3.0f);
-    vector<float> b = vector<float>(1000000, -67.0f);
+    std::vector<float> a = std::vector<float>(1000000, -3.0f);
+    std::vector<float> b = std::vector<float>(1000000, -67.0f);
 
-    Tensor A = Tensor(a, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 1000, 1000, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 1000, 1000, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1000, 1000, std::shared_ptr<TensorStrategy>(GetParam()));
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 1000);
@@ -124,11 +122,11 @@ TEST_P(MatrixMultTest, NegativeValuesMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, LargeValuesMatrixMultTest) {
-    vector<float> a = vector<float>(100, 20000.0f);
-    vector<float> b = vector<float>(100, 10000.0f);
+    std::vector<float> a = std::vector<float>(100, 20000.0f);
+    std::vector<float> b = std::vector<float>(100, 10000.0f);
 
-    Tensor A = Tensor(a, 10, 10, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 10, 10, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 10, 10, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 10, 10, std::shared_ptr<TensorStrategy>(GetParam()));
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 10);
@@ -140,20 +138,20 @@ TEST_P(MatrixMultTest, LargeValuesMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, InvalidMultTest) {
-    vector<float> a = vector<float>(1000000, 1.0f);
-    vector<float> b = vector<float>(1000000, 1.0f);
+    std::vector<float> a = std::vector<float>(1000000, 1.0f);
+    std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1, 1000000, shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 1, 1000000, shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 1, 1000000, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor B = Tensor(b, 1, 1000000, std::shared_ptr<TensorStrategy>(GetParam()));
 
-    ASSERT_THROW(A * B, runtime_error);
+    ASSERT_THROW(A * B, std::runtime_error);
 }
 
 INSTANTIATE_TEST_CASE_P(TestAllMultStrategies, MatrixMultTest, testing::Values(
-    make_shared<BasicTensorStrategy>(),
-    make_shared<BasicSimdTensorStrategy>(),
-    make_shared<ConcurrentRowTensorStrategy>(),
-    make_shared<ConcurrentBlockedTensorStrategy>(),
-    make_shared<OptimisedTensorStrategy>()));
+    std::make_shared<BasicTensorStrategy>(),
+    std::make_shared<BasicSimdTensorStrategy>(),
+    std::make_shared<ConcurrentRowTensorStrategy>(),
+    std::make_shared<ConcurrentBlockedTensorStrategy>(),
+    std::make_shared<OptimisedTensorStrategy>()));
 
 

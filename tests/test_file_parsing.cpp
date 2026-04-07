@@ -1,24 +1,22 @@
 #include <gtest/gtest.h>
 #include "parse_safetensors.h"
 
-using namespace std;
-
 TEST(ParsingTest, OpenFileTest) {
-    SafeTensorsParser parser(string(SRC_DIR) + "/models/model.safetensors");
+    SafeTensorsParser parser(std::string(SRC_DIR) + "/models/model.safetensors");
 }
 
 TEST(ParsingTest, CheckNumTensorsTest) {
-    SafeTensorsParser parser(string(SRC_DIR) + "/models/model.safetensors");
+    SafeTensorsParser parser(std::string(SRC_DIR) + "/models/model.safetensors");
 
-    vector<Tensor> tensors = parser.parse();
+    std::vector<Tensor> tensors = parser.parse();
 
     ASSERT_EQ(tensors.size(), 6);
 
 }
 
 TEST(ParsingTest, CheckParsedValuesTest) {
-    SafeTensorsParser parser(string(SRC_DIR) + "/models/model.safetensors");
-    vector<Tensor> tensors = parser.parse();
+    SafeTensorsParser parser(std::string(SRC_DIR) + "/models/model.safetensors");
+    std::vector<Tensor> tensors = parser.parse();
 
     const float tol = 1e-7f;
 

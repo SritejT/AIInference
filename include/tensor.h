@@ -2,27 +2,25 @@
 #include <vector>
 #include <memory>
 
-using namespace std;
-
 class TensorStrategy; 
 
 class Tensor {
 protected:
     size_t height, width;
-    shared_ptr<TensorStrategy> strategy;
+    std::shared_ptr<TensorStrategy> strategy;
 
 public:
 
-    Tensor(size_t h, size_t w, shared_ptr<TensorStrategy> strategy);
-    Tensor(vector<float> d, size_t h, size_t w, shared_ptr<TensorStrategy> strategy);
+    Tensor(size_t h, size_t w, std::shared_ptr<TensorStrategy> strategy);
+    Tensor(std::vector<float> d, size_t h, size_t w, std::shared_ptr<TensorStrategy> strategy);
 
-    vector<float> data;
+    std::vector<float> data;
 
     size_t getWidth() const;
     size_t getHeight() const;
 
-    vector<float>::const_iterator begin();
-    vector<float>::const_iterator end();
+    std::vector<float>::const_iterator begin();
+    std::vector<float>::const_iterator end();
 
     Tensor operator+(const Tensor& other) const;
     Tensor operator*(const Tensor& other) const;

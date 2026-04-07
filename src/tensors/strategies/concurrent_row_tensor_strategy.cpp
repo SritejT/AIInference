@@ -10,12 +10,12 @@ void ConcurrentRowTensorStrategy::add(
 
     size_t height = result->getHeight();
 
-    size_t num_threads = thread::hardware_concurrency();
-    vector<thread> threads;
+    size_t num_threads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
 
     for (size_t i = 0; i < num_threads; i++) {
 
-        threads.push_back(thread(
+        threads.push_back(std::thread(
             &ConcurrentRowTensorStrategy::process_add_block,
             this,
             A, 
@@ -41,12 +41,12 @@ void ConcurrentRowTensorStrategy::mult(
 
     size_t height = result->getHeight();
 
-    size_t num_threads = thread::hardware_concurrency();
-    vector<thread> threads;
+    size_t num_threads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
 
     for (size_t i = 0; i < num_threads; i++) {
 
-        threads.push_back(thread(
+        threads.push_back(std::thread(
             &ConcurrentRowTensorStrategy::process_mult_block,
             this,
             A, 

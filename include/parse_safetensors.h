@@ -3,12 +3,10 @@
 #include <cstring>
 #include "tensor.h"
 
-using namespace std;
-
 struct TensorInfo {
-    string name;
-    string dtype;
-    vector<size_t> shape;
+    std::string name;
+    std::string dtype;
+    std::vector<size_t> shape;
     size_t start;
     size_t end;
 };
@@ -16,22 +14,22 @@ struct TensorInfo {
 class SafeTensorsParser {
 private:
 
-    ifstream f;
+    std::ifstream f;
     uint64_t header_size;
 
-    string read_header_data();
+    std::string read_header_data();
 
-    vector<TensorInfo> parse_header(string header_json);
+    std::vector<TensorInfo> parse_header(std::string header_json);
 
-    vector<Tensor> parse_data(vector<TensorInfo>& info); 
+    std::vector<Tensor> parse_data(std::vector<TensorInfo>& info); 
 
 
 public:
     
-    SafeTensorsParser(string fname);
+    SafeTensorsParser(std::string fname);
 
     ~SafeTensorsParser();
 
-    vector<Tensor> parse(); 
+    std::vector<Tensor> parse(); 
 };
 

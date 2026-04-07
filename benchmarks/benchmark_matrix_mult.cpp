@@ -8,13 +8,11 @@
 #include "strategies/concurrent_blocked_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
 
-using namespace std;
-
 template <typename Strategy>
 static void TensorSquareMatMul(benchmark::State& state) {
     int n = state.range(0);
-    Tensor a(vector<float>(n * n, 1.0f), n, n, make_shared<Strategy>());
-    Tensor b(vector<float>(n * n, 1.0f), n, n, make_shared<Strategy>());
+    Tensor a(std::vector<float>(n * n, 1.0f), n, n, std::make_shared<Strategy>());
+    Tensor b(std::vector<float>(n * n, 1.0f), n, n, std::make_shared<Strategy>());
     for (auto _ : state) {
         Tensor c = a * b;
         benchmark::DoNotOptimize(c);
@@ -24,8 +22,8 @@ static void TensorSquareMatMul(benchmark::State& state) {
 template <typename Strategy>
 static void TensorMatxVecMul(benchmark::State& state) {
     int n = state.range(0);
-    Tensor a(vector<float>(n * n, 1.0f), n, n, make_shared<Strategy>());
-    Tensor b(vector<float>(n, 1.0f), n, 1, make_shared<Strategy>());
+    Tensor a(std::vector<float>(n * n, 1.0f), n, n, std::make_shared<Strategy>());
+    Tensor b(std::vector<float>(n, 1.0f), n, 1, std::make_shared<Strategy>());
     for (auto _ : state) {
         Tensor c = a * b;
         benchmark::DoNotOptimize(c);
