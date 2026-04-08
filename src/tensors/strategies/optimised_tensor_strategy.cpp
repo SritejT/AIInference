@@ -5,9 +5,9 @@ void OptimisedTensorStrategy::add(const Tensor* A, const Tensor* B, Tensor* resu
     size_t operations = A->getHeight() * A->getWidth(); 
 
     if (operations > 1000000) {
-        concurrent_strategy.add(A, B, result);
+        concurrent_strategy->add(A, B, result);
     } else {
-        simd_strategy.add(A, B, result);
+        simd_strategy->add(A, B, result);
     }
     
 }
@@ -17,9 +17,9 @@ void OptimisedTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* res
     size_t operations = A->getHeight() * B->getWidth() * A->getWidth();
 
     if (operations > 1000000) {
-        concurrent_strategy.mult(A, B, result);
+        concurrent_strategy->mult(A, B, result);
     } else {
-        simd_strategy.mult(A, B, result);
+        simd_strategy->mult(A, B, result);
     }
     
 }

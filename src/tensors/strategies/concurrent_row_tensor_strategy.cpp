@@ -1,7 +1,5 @@
 #include "strategies/concurrent_row_tensor_strategy.h"
-#include <arm_neon.h>
-#include <thread>
-#include <vector>
+#include "tensor.h"
 
 void ConcurrentRowTensorStrategy::add(
         const Tensor* A,
@@ -11,27 +9,31 @@ void ConcurrentRowTensorStrategy::add(
     size_t height = result->getHeight();
 
     size_t num_threads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
+
+    std::vector<std::future<void>> futures;
 
     for (size_t i = 0; i < num_threads; i++) {
 
-        threads.push_back(std::thread(
-            &ConcurrentRowTensorStrategy::process_add_block,
-            this,
-            A, 
-            B,
-            result,
-            i * height / num_threads,
-            0,
-            (i + 1) * height / num_threads,
-            B->getWidth()
-        ));
+        auto fut = pool->submit([=, this]() {
+            simd_strategy->process_add_block(
+                A, 
+                B,
+                result,
+                i * height / num_threads,
+                0,
+                (i + 1) * height / num_threads,
+                B->getWidth()
+            );
+        });
+
+        futures.push_back(std::move(fut));
 
     }
 
-    for (auto& t : threads) {
-        t.join();
+    for (auto& fut : futures) {
+        fut.get();
     }
+
 }
 
 void ConcurrentRowTensorStrategy::mult(
@@ -42,26 +44,29 @@ void ConcurrentRowTensorStrategy::mult(
     size_t height = result->getHeight();
 
     size_t num_threads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
+
+    std::vector<std::future<void>> futures;
 
     for (size_t i = 0; i < num_threads; i++) {
 
-        threads.push_back(std::thread(
-            &ConcurrentRowTensorStrategy::process_mult_block,
-            this,
-            A, 
-            B,
-            result,
-            i * height / num_threads,
-            0,
-            (i + 1) * height / num_threads,
-            B->getWidth()
-        ));
+        auto fut = pool->submit([=, this]() {
+            simd_strategy->process_mult_block(
+                A, 
+                B,
+                result,
+                i * height / num_threads,
+                0,
+                (i + 1) * height / num_threads,
+                B->getWidth()
+            );
+        });
+
+        futures.push_back(std::move(fut));
 
     }
 
-    for (auto& t : threads) {
-        t.join();
+    for (auto& fut : futures) {
+        fut.get();
     }
 }
 

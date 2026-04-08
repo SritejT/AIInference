@@ -1,7 +1,5 @@
 #include "strategies/concurrent_blocked_tensor_strategy.h"
-#include <arm_neon.h>
 #include <thread>
-#include <vector>
 #include <cmath>
 
 void ConcurrentBlockedTensorStrategy::add(
@@ -16,7 +14,7 @@ void ConcurrentBlockedTensorStrategy::add(
 
     size_t grid_dim = sqrt(num_cores);
 
-    std::vector<std::thread> threads;
+    std::vector<std::future<void>> futures;
 
     for (int i=0; i < grid_dim * grid_dim; i++) {
         size_t grid_i = i / grid_dim;
@@ -27,21 +25,22 @@ void ConcurrentBlockedTensorStrategy::add(
         size_t start_col = grid_j * width / grid_dim;
         size_t end_col = (grid_j + 1) * width / grid_dim;
 
-        threads.push_back(std::thread(
-            &ConcurrentBlockedTensorStrategy::process_add_block,
-            this,
-            A,
-            B,
-            result,
-            start_row,
-            start_col,
-            end_row,
-            end_col
-        ));
-    }        
-
-    for (auto& t : threads) {
-        t.join();
+        auto fut = pool->submit([=, this]() {
+            simd_strategy->process_add_block(
+                A,
+                B,
+                result,
+                start_row,
+                start_col,
+                end_row,
+                end_col
+            );
+        }); 
+           
+        futures.push_back(std::move(fut));
+    }
+for (auto& fut : futures) {
+        fut.get();
     }
 }
 
@@ -57,7 +56,7 @@ void ConcurrentBlockedTensorStrategy::mult(
 
     size_t grid_dim = sqrt(num_cores);
 
-    std::vector<std::thread> threads;
+    std::vector<std::future<void>> futures;
 
     for (int i=0; i < grid_dim * grid_dim; i++) {
         size_t grid_i = i / grid_dim;
@@ -74,20 +73,22 @@ void ConcurrentBlockedTensorStrategy::mult(
             end_col = (grid_j + 1) * width / grid_dim;
         }
 
-        threads.push_back(std::thread(
-            &ConcurrentBlockedTensorStrategy::process_mult_block,
-            this,
-            A,
-            B,
-            result,
-            start_row,
-            start_col,
-            end_row,
-            end_col
-        ));
-    }        
+        auto fut = pool->submit([=, this]() {
+            simd_strategy->process_mult_block(
+                A,
+                B,
+                result,
+                start_row,
+                start_col,
+                end_row,
+                end_col
+            );
+        });
 
-    for (auto& t : threads) {
-        t.join();
+        futures.push_back(std::move(fut));
+    }
+    
+    for (auto& fut : futures) {
+        fut.get();
     }
 }

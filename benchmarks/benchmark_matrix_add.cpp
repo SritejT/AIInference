@@ -2,7 +2,7 @@
 #include <vector>
 #include "tensor.h"
 #include "strategies/basic_tensor_strategy.h"
-#include "strategies/basic_simd_tensor_strategy.h"
+#include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/concurrent_blocked_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
@@ -10,8 +10,12 @@
 template <typename Strategy>
 static void TensorSquareMatAdd(benchmark::State& state) {
     int n = state.range(0);
-    Tensor a(std::vector<float>(n * n, 1.0f), n, n, std::make_shared<Strategy>());
-    Tensor b(std::vector<float>(n * n, 1.0f), n, n, std::make_shared<Strategy>());
+
+    auto strategy = std::make_shared<Strategy>();
+
+    Tensor a(std::vector<float>(n * n, 1.0f), n, n, strategy);
+    Tensor b(std::vector<float>(n * n, 1.0f), n, n, strategy);
+
     for (auto _ : state) {
         Tensor c = a + b;
         benchmark::DoNotOptimize(c);
@@ -19,7 +23,7 @@ static void TensorSquareMatAdd(benchmark::State& state) {
 }
 
 BENCHMARK(TensorSquareMatAdd<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
-BENCHMARK(TensorSquareMatAdd<BasicSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatAdd<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorSquareMatAdd<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorSquareMatAdd<ConcurrentBlockedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 BENCHMARK(TensorSquareMatAdd<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);

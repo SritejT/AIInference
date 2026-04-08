@@ -1,9 +1,17 @@
 #pragma once
+#include "strategies/tensor_strategy.h"
 #include "strategies/simd_tensor_strategy.h"
+#include "threadpool.h"
 
-class ConcurrentRowTensorStrategy : public SimdTensorStrategy {
+class ConcurrentRowTensorStrategy : public TensorStrategy {
+
+private:
+    inline static std::shared_ptr<Threadpool> pool = Threadpool::get_instance();
+    inline static std::shared_ptr<SimdTensorStrategy> simd_strategy = std::make_shared<SimdTensorStrategy>();
 
 public:
+
+    ConcurrentRowTensorStrategy() = default;
 
     void add(const Tensor* A, const Tensor* B, Tensor* result) const override; 
     void mult(const Tensor* A, const Tensor* B, Tensor* result) const override; 

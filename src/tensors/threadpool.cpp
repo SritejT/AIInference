@@ -1,7 +1,6 @@
 #include <thread>
 #include <atomic>
 #include <vector>
-#include <future>
 #include "threadsafe_queue.h"
 #include "threadpool.h"
 
@@ -31,18 +30,7 @@ Threadpool::Threadpool(size_t num_threads) : done(false) {
     }
 }
 
-// Submits a function that takes no arguments to the threadpool.
-// Returns a future that represents the result of the function.
-template<typename FunctionType>
-std::future<typename std::result_of<FunctionType()>::type> Threadpool::submit(FunctionType f) {
 
-    typedef typename std::result_of<FunctionType()>::type ResultType;
-
-    std::packaged_task<ResultType()> task(f);
-    std::future<ResultType> res = task.get_future();
-    work_queue.push(std::move(task));
-    return res;
-}
 
 // Cleanup by ending all worker threads.
 Threadpool::~Threadpool() {
