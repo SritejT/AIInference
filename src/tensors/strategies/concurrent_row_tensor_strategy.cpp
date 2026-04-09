@@ -14,7 +14,7 @@ void ConcurrentRowTensorStrategy::add(
 
     for (size_t i = 0; i < num_threads; i++) {
 
-        auto fut = pool->submit([=, this]() {
+        auto fut = pool.submit([=, this]() {
             simd_strategy->process_add_block(
                 A, 
                 B,
@@ -49,7 +49,7 @@ void ConcurrentRowTensorStrategy::mult(
 
     for (size_t i = 0; i < num_threads; i++) {
 
-        auto fut = pool->submit([=, this]() {
+        auto fut = pool.submit([=, this]() {
             simd_strategy->process_mult_block(
                 A, 
                 B,

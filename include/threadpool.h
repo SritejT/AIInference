@@ -50,7 +50,6 @@ public:
 
 class Threadpool {
 private:
-    inline static std::shared_ptr<Threadpool> pool = nullptr;
 
     std::atomic_bool done;
     std::vector<std::thread> threads;
@@ -63,14 +62,19 @@ private:
 
 public:
 
-    static std::shared_ptr<Threadpool> get_instance() {
+    static Threadpool& get_instance() {
 
-        if (!pool) {
-            pool = std::shared_ptr<Threadpool>(new Threadpool(std::thread::hardware_concurrency()));
-        }        
+        static Threadpool pool = Threadpool(std::thread::hardware_concurrency());
 
-        return std::shared_ptr<Threadpool>(pool);
+        return pool;
+
     }
+
+    Threadpool(const Threadpool&) = delete;
+    Threadpool& operator=(const Threadpool&) = delete;
+
+    Threadpool(Threadpool&&) = delete;
+    Threadpool& operator=(Threadpool&&) = delete;
 
     // Submits a function that takes no arguments to the threadpool.
     // Returns a future that represents the result of the function.

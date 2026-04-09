@@ -25,7 +25,7 @@ void ConcurrentBlockedTensorStrategy::add(
         size_t start_col = grid_j * width / grid_dim;
         size_t end_col = (grid_j + 1) * width / grid_dim;
 
-        auto fut = pool->submit([=, this]() {
+        auto fut = pool.submit([=, this]() {
             simd_strategy->process_add_block(
                 A,
                 B,
@@ -73,7 +73,7 @@ void ConcurrentBlockedTensorStrategy::mult(
             end_col = (grid_j + 1) * width / grid_dim;
         }
 
-        auto fut = pool->submit([=, this]() {
+        auto fut = pool.submit([=, this]() {
             simd_strategy->process_mult_block(
                 A,
                 B,

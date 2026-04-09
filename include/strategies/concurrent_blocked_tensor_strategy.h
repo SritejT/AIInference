@@ -6,13 +6,11 @@
 
 class ConcurrentBlockedTensorStrategy: public TensorStrategy {
 private:
-    inline static std::shared_ptr<Threadpool> pool = Threadpool::get_instance();
+    inline static Threadpool& pool = Threadpool::get_instance();
     inline static std::shared_ptr<SimdTensorStrategy> simd_strategy = std::make_shared<SimdTensorStrategy>();
+
 public:
 
-    ConcurrentBlockedTensorStrategy() = default;
-    
-    
     void add(
             const Tensor *A,
             const Tensor *B,
