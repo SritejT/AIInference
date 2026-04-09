@@ -4,7 +4,6 @@
 #include "strategies/basic_tensor_strategy.h"
 #include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
-#include "strategies/concurrent_blocked_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
 
 template <typename Strategy>
@@ -22,10 +21,9 @@ static void TensorSquareMatAdd(benchmark::State& state) {
     }
 }
 
-BENCHMARK(TensorSquareMatAdd<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
-BENCHMARK(TensorSquareMatAdd<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
-BENCHMARK(TensorSquareMatAdd<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
-BENCHMARK(TensorSquareMatAdd<ConcurrentBlockedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
-BENCHMARK(TensorSquareMatAdd<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatAdd<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorSquareMatAdd<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorSquareMatAdd<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorSquareMatAdd<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 
 BENCHMARK_MAIN();

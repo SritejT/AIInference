@@ -17,3 +17,6 @@ target_link_libraries(mult_benchmarks PRIVATE AIInference_lib benchmark::benchma
 add_executable(add_benchmarks benchmark_matrix_add.cpp)
 target_link_libraries(add_benchmarks PRIVATE AIInference_lib benchmark::benchmark)
 
+add_executable(transpose_benchmarks benchmark_matrix_transpose.cpp)
+target_link_libraries(transpose_benchmarks PRIVATE AIInference_lib benchmark::benchmark)
+
