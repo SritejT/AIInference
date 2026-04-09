@@ -71,5 +71,29 @@ void ConcurrentRowTensorStrategy::mult(
 }
 
 void ConcurrentRowTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
-    simd_strategy->process_transpose_block(A, result, 0, A->getHeight());
+
+    size_t height = A->getHeight();
+
+    size_t num_threads = std::thread::hardware_concurrency();
+
+    std::vector<std::future<void>> futures;
+
+    for (size_t i = 0; i < num_threads; i++) {
+
+        auto fut = pool.submit([=, this]() {
+            simd_strategy->process_transpose_block(
+                A, 
+                result,
+                i * height / num_threads,
+                (i + 1) * height / num_threads
+            );
+        });
+
+        futures.push_back(std::move(fut));
+
+    }
+
+    for (auto& fut : futures) {
+        fut.get();
+    }
 }
