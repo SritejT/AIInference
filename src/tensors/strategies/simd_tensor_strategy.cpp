@@ -77,5 +77,5 @@ void SimdTensorStrategy::add(const Tensor* A, const Tensor* B, Tensor* result) c
 }
 
 void SimdTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* result) const {
-    process_mult_block(A, B, result, 0, 0, A->getHeight(), A->getWidth());
+    process_mult_block(A, B, result, 0, 0, A->getHeight(), B->getWidth());
 }

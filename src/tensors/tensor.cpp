@@ -46,10 +46,7 @@ Tensor Tensor::operator+(const Tensor& other) const {
     }
 
     Tensor result(height, width, strategy);
-    for (size_t i = 0; i < height * width; i++) {
-        result.data[i] = data[i] + other.data[i];
-    }
-
+    strategy->add(this, &other, &result); 
     return result;
 }
 
