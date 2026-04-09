@@ -9,7 +9,7 @@
 
 class MatrixTransposeTest : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
 
-TEST_P(MatrixTransposeTest, Transpose) {
+TEST_P(MatrixTransposeTest, TransposeSmallMatrix) {
 
     auto strategy = GetParam();
     Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, strategy);
@@ -22,6 +22,33 @@ TEST_P(MatrixTransposeTest, Transpose) {
     ASSERT_EQ(b.data[1], 3.0f);
     ASSERT_EQ(b.data[2], 2.0f);
     ASSERT_EQ(b.data[3], 4.0f);
+}
+
+TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
+
+    auto strategy = GetParam();
+
+    std::vector<float> data(1000000);
+
+    for (int i = 0; i < 1000; i++) {
+        for (int j = 0; j < 1000; j++) {
+            data[i * 1000 + j] = i;
+        }
+    }
+
+    Tensor a = Tensor(data, 1000, 1000, strategy);
+
+    Tensor b = a.transpose();
+
+    ASSERT_EQ(b.getWidth(), 1000);
+    ASSERT_EQ(b.getHeight(), 1000);
+
+    for (int i = 0; i < 1000; i++) {
+        for (int j = 0; j < 1000; j++) {
+            ASSERT_EQ(b.data[j * 1000 + i], i);
+        }
+    }
+    
 }
 
 INSTANTIATE_TEST_SUITE_P(

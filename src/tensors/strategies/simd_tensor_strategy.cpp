@@ -85,7 +85,7 @@ void SimdTensorStrategy::process_transpose_block(
     size_t height = A->getHeight();
 
     for (; i+4 < end_row; i+=4) {
-        for (; j+4 < width; j+=4) {
+        for (j=0; j+4 < width; j+=4) {
 
             // load 4 rows
             float32x4_t r0 = vld1q_f32(&A->data[i * width + j]);
@@ -113,10 +113,13 @@ void SimdTensorStrategy::process_transpose_block(
 
         for (; j < width; j++) {
             result->data[j * height + i] = A->data[i * width + j];
+            result->data[j * height + i + 1] = A->data[(i + 1) * width + j];
+            result->data[j * height + i + 2] = A->data[(i + 2) * width + j];
+            result->data[j * height + i + 3] = A->data[(i + 3) * width + j];
         }
     }
 
-    for (; i < height; i++) {
+    for (; i < end_row; i++) {
         for (j = 0; j < width; j++) {
             result->data[j * height + i] = A->data[i * width + j];
         }
