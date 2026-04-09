@@ -28,4 +28,11 @@ void BasicTensorStrategy::add(const Tensor* A, const Tensor* B, Tensor* result) 
     }
 }
 
+void BasicTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
+    for (size_t i = 0; i < A->getHeight(); i++) {
+        for (size_t j = 0; j < A->getWidth(); j++) {
+            result->data[j * A->getHeight() + i] = A->data[i * A->getWidth() + j];
+        }
+    }
+}
 

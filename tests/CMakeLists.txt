@@ -16,7 +16,8 @@ include(GoogleTest)
 
 
 # Create test executable
-add_executable(all_tests test_file_parsing.cpp test_matrix_mult.cpp test_matrix_add.cpp test_threadpool.cpp)
+add_executable(all_tests test_file_parsing.cpp test_matrix_mult.cpp test_matrix_add.cpp test_threadpool.cpp
+    test_matrix_transpose.cpp)
 
 target_link_libraries(all_tests GTest::gtest_main AIInference_lib)
 

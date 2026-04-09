@@ -15,6 +15,7 @@ public:
 
     void add(const Tensor* A, const Tensor* B, Tensor* result) const override; 
     void mult(const Tensor* A, const Tensor* B, Tensor* result) const override; 
+    void transpose(const Tensor* A, Tensor* result) const override;
 
 };
 

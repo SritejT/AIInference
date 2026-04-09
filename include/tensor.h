@@ -24,6 +24,8 @@ public:
 
     Tensor operator+(const Tensor& other) const;
     Tensor operator*(const Tensor& other) const;
+    
+    Tensor transpose() const;
 
     void display() const;
 };

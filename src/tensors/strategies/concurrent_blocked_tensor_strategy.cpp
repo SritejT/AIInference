@@ -92,3 +92,7 @@ void ConcurrentBlockedTensorStrategy::mult(
         fut.get();
     }
 }
+
+void ConcurrentBlockedTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
+    simd_strategy->process_transpose_block(A, result, 0, A->getHeight());
+}

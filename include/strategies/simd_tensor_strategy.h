@@ -23,6 +23,13 @@ public:
             size_t end_row,
             size_t end_col) const;
 
+    void process_transpose_block(
+            const Tensor* A,
+            Tensor* result,
+            size_t start_row,
+            size_t end_row) const;
+
     void add(const Tensor* A, const Tensor* B, Tensor* result) const override;
     void mult(const Tensor* A, const Tensor* B, Tensor* result) const override;
+    void transpose(const Tensor* A, Tensor* result) const override;
 };

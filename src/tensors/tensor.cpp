@@ -61,6 +61,12 @@ Tensor Tensor::operator*(const Tensor& other) const {
 
 }
 
+Tensor Tensor::transpose() const {
+    Tensor result(width, height, strategy);
+    strategy->transpose(this, &result);
+    return result;
+}
+
 void Tensor::display() const {
     for (size_t i = 0; i < height; i++) {
         for (size_t j = 0; j < width; j++) {

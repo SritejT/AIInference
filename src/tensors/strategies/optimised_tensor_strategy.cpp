@@ -23,3 +23,7 @@ void OptimisedTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* res
     }
     
 }
+
+void OptimisedTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
+    simd_strategy->transpose(A, result);
+}
