@@ -25,5 +25,12 @@ void OptimisedTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* res
 }
 
 void OptimisedTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
-    simd_strategy->transpose(A, result);
+
+    size_t operations = A->getHeight() * A->getWidth();
+
+    if (operations > 25000) {
+        concurrent_strategy->transpose(A, result);
+    } else {
+        simd_strategy->transpose(A, result);
+    }
 }
