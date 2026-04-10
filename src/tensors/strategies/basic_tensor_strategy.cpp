@@ -36,3 +36,9 @@ void BasicTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
     }
 }
 
+void BasicTensorStrategy::apply(std::function<float(float)> f, Tensor* A, Tensor* result) const {
+    for (size_t i = 0; i < A->getHeight() * A->getWidth(); i++) {
+        result->data[i] = f(A->data[i]);
+    }
+}
+

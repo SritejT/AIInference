@@ -1,13 +1,16 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <functional>
 
 class TensorStrategy; 
 
 class Tensor {
-protected:
+private:
     size_t height, width;
     std::shared_ptr<TensorStrategy> strategy;
+
+    Tensor apply(std::function<float(float)> f);
 
 public:
 
@@ -23,7 +26,14 @@ public:
     std::vector<float>::const_iterator end();
 
     Tensor operator+(const Tensor& other) const;
+    
+    Tensor operator*(float scalar) const;
     Tensor operator*(const Tensor& other) const;
+
+    Tensor operator-() const;
+    Tensor operator-(const Tensor& other) const;
+
+    Tensor operator/(float scalar) const;
     
     Tensor transpose() const;
 

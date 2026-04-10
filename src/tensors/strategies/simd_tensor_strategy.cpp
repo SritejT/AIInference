@@ -127,6 +127,23 @@ void SimdTensorStrategy::process_transpose_block(
 
 }
 
+void SimdTensorStrategy::process_apply_block(
+        std::function<float(float)> f,
+        const Tensor* A,
+        Tensor* result,
+        size_t start_row,
+        size_t end_row) const {
+
+    size_t width = A->getWidth();
+    
+    for (size_t i = start_row; i < end_row; i++) {
+        for (size_t j = 0; j < width; j++) {
+            result->data[i * width + j] = f(A->data[i * width + j]);
+        }
+    }
+
+}
+
 void SimdTensorStrategy::add(const Tensor* A, const Tensor* B, Tensor* result) const {
     process_add_block(A, B, result, 0, 0, A->getHeight(), A->getWidth());
 }
@@ -137,4 +154,8 @@ void SimdTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* result) 
 
 void SimdTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
     process_transpose_block(A, result, 0, A->getHeight());
+}
+
+void SimdTensorStrategy::apply(std::function<float(float)> f, Tensor* A, Tensor* result) const {
+    process_apply_block(f, A, result, 0, A->getHeight());
 }

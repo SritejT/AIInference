@@ -40,6 +40,12 @@ std::vector<float>::const_iterator Tensor::end() {
     return data.end();
 }
 
+Tensor Tensor::apply(std::function<float(float)> f) {
+    Tensor result(height, width, strategy);
+    strategy->apply(f, this, &result);
+    return result;
+}
+
 Tensor Tensor::operator+(const Tensor& other) const {
     if ((width != other.width) || (height != other.height)) {
         throw std::runtime_error("Invalid tensor sizes");

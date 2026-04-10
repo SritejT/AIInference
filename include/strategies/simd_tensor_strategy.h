@@ -29,7 +29,16 @@ public:
             size_t start_row,
             size_t end_row) const;
 
+    void process_apply_block(
+            std::function<float(float)> f,
+            const Tensor* A,
+            Tensor* result,
+            size_t start_row,
+            size_t end_row) const;
+
     void add(const Tensor* A, const Tensor* B, Tensor* result) const override;
     void mult(const Tensor* A, const Tensor* B, Tensor* result) const override;
     void transpose(const Tensor* A, Tensor* result) const override;
+
+    void apply(std::function<float(float)> f, Tensor* A, Tensor* result) const override;
 };

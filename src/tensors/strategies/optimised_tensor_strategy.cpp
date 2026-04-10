@@ -34,3 +34,14 @@ void OptimisedTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
         simd_strategy->transpose(A, result);
     }
 }
+
+void OptimisedTensorStrategy::apply(std::function<float(float)> f, Tensor* A, Tensor* result) const {
+
+    size_t operations = A->getHeight() * A->getWidth();
+
+    if (operations > 25000) {
+        concurrent_strategy->apply(f, A, result);
+    } else {
+        simd_strategy->apply(f, A, result);
+    }
+}
