@@ -26,7 +26,9 @@ public:
     virtual void add(const Tensor* A, const Tensor* B, Tensor* result) const = 0;
     virtual void transpose(const Tensor* A, Tensor* result) const = 0;
 
-    virtual void inverse(Tensor* A, Tensor* result) const {
+    virtual void inverse(const Tensor* A, Tensor* result) const {
+        
+        Tensor A_copy = *A;
 
         size_t n = A->getHeight();
 
@@ -35,24 +37,24 @@ public:
         }
 
         for (size_t i = 0; i < n; i++) {
-            float m1 = A->data[i * n + i];
+            float m1 = A_copy.data[i * n + i];
             if (m1 <= 1e-10f && m1 >= -1e-10f) {
                 throw std::runtime_error("Cannot invert a singular matrix");
             }
-            scale_row(A, i, 1.0f / m1);
+            scale_row(&A_copy, i, 1.0f / m1);
             scale_row(result, i, 1.0f / m1);
 
             for (size_t j = i+1; j < n; j++) {
-                float m2 = A->data[j * n + i];
-                subtract_rows(A, j, i, m2);
+                float m2 = A_copy.data[j * n + i];
+                subtract_rows(&A_copy, j, i, m2);
                 subtract_rows(result, j, i, m2);
             }
         }
 
         for (int i = n-1; i >= 0; i--) {
             for (int j = i-1; j >= 0; j--) {
-                float m3 = A->data[j * n + i];
-                subtract_rows(A, j, i, m3);
+                float m3 = A_copy.data[j * n + i];
+                subtract_rows(&A_copy, j, i, m3);
                 subtract_rows(result, j, i, m3);
             }
         }

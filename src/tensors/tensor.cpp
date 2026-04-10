@@ -96,7 +96,7 @@ Tensor Tensor::transpose() const {
     return result;
 }
 
-Tensor Tensor::inverse() {
+Tensor Tensor::inverse() const {
     if (width != height) {
         throw std::runtime_error("Cannot invert a non-square matrix");
     }
