@@ -10,7 +10,7 @@ private:
     size_t height, width;
     std::shared_ptr<TensorStrategy> strategy;
 
-    Tensor apply(std::function<float(float)> f);
+    Tensor apply(std::function<float(float)> f) const;
 
 public:
 

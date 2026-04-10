@@ -17,7 +17,7 @@ public:
     void mult(const Tensor* A, const Tensor* B, Tensor* result) const override; 
     void transpose(const Tensor* A, Tensor* result) const override;
 
-    void apply(std::function<float(float)> f, Tensor* A, Tensor* result) const override;
+    void apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const override;
 
 };
 

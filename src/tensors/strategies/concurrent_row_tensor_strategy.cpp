@@ -98,7 +98,7 @@ void ConcurrentRowTensorStrategy::transpose(const Tensor* A, Tensor* result) con
     }
 }
 
-void ConcurrentRowTensorStrategy::apply(std::function<float(float)> f, Tensor* A, Tensor* result) const {
+void ConcurrentRowTensorStrategy::apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const {
 
     size_t height = A->getHeight();
 

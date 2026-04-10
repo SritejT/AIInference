@@ -35,7 +35,7 @@ void OptimisedTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
     }
 }
 
-void OptimisedTensorStrategy::apply(std::function<float(float)> f, Tensor* A, Tensor* result) const {
+void OptimisedTensorStrategy::apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const {
 
     size_t operations = A->getHeight() * A->getWidth();
 

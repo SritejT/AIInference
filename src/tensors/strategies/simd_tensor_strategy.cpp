@@ -156,6 +156,6 @@ void SimdTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
     process_transpose_block(A, result, 0, A->getHeight());
 }
 
-void SimdTensorStrategy::apply(std::function<float(float)> f, Tensor* A, Tensor* result) const {
+void SimdTensorStrategy::apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const {
     process_apply_block(f, A, result, 0, A->getHeight());
 }

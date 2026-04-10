@@ -40,7 +40,7 @@ std::vector<float>::const_iterator Tensor::end() {
     return data.end();
 }
 
-Tensor Tensor::apply(std::function<float(float)> f) {
+Tensor Tensor::apply(std::function<float(float)> f) const {
     Tensor result(height, width, strategy);
     strategy->apply(f, this, &result);
     return result;
@@ -56,6 +56,21 @@ Tensor Tensor::operator+(const Tensor& other) const {
     return result;
 }
 
+Tensor Tensor::operator-() const {
+    return this->apply([&](float data) { return -data; });
+}
+
+Tensor Tensor::operator-(const Tensor& other) const {
+
+    if ((width != other.width) || (height != other.height)) {
+        throw std::runtime_error("Invalid tensor sizes");
+    }
+
+    const Tensor negated = -other;
+
+    return *this + negated;
+}
+
 Tensor Tensor::operator*(const Tensor& other) const {
     if (width != other.height) {
         throw std::runtime_error("Invalid tensor sizes");
@@ -65,6 +80,14 @@ Tensor Tensor::operator*(const Tensor& other) const {
     strategy->mult(this, &other, &result);
     return result;
 
+}
+
+Tensor Tensor::operator*(float scalar) const {
+    return this->apply([scalar](float x) { return x * scalar; });
+}
+
+Tensor Tensor::operator/(float scalar) const {
+    return this->apply([scalar](float x) { return x / scalar; });
 }
 
 Tensor Tensor::transpose() const {
