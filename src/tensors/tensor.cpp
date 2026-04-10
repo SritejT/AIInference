@@ -96,6 +96,16 @@ Tensor Tensor::transpose() const {
     return result;
 }
 
+Tensor Tensor::inverse() {
+    if (width != height) {
+        throw std::runtime_error("Cannot invert a non-square matrix");
+    }
+
+    Tensor result(width, height, strategy);
+    strategy->inverse(this, &result);
+    return result;
+}
+
 void Tensor::display() const {
     for (size_t i = 0; i < height; i++) {
         for (size_t j = 0; j < width; j++) {
@@ -104,3 +114,5 @@ void Tensor::display() const {
         std::cout << std::endl;
     }
 }
+
+

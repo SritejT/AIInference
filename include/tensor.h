@@ -36,6 +36,7 @@ public:
     Tensor operator/(float scalar) const;
     
     Tensor transpose() const;
+    Tensor inverse();
 
     void display() const;
 };
