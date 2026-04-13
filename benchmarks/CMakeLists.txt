@@ -20,3 +20,5 @@ target_link_libraries(add_benchmarks PRIVATE AIInference_lib benchmark::benchmar
 add_executable(transpose_benchmarks benchmark_matrix_transpose.cpp)
 target_link_libraries(transpose_benchmarks PRIVATE AIInference_lib benchmark::benchmark)
 
+add_executable(inverse_benchmarks benchmark_matrix_inverse.cpp)
+target_link_libraries(inverse_benchmarks PRIVATE AIInference_lib benchmark::benchmark)
