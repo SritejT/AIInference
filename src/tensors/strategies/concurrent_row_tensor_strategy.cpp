@@ -98,6 +98,18 @@ void ConcurrentRowTensorStrategy::transpose(const Tensor* A, Tensor* result) con
     }
 }
 
+void ConcurrentRowTensorStrategy::swap_rows(Tensor* A, size_t row1, size_t row2) const {
+    simd_strategy->swap_rows(A, row1, row2);
+}
+
+void ConcurrentRowTensorStrategy::subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const {
+    simd_strategy->subtract_rows(A, row1, row2, multiple);
+}
+
+void ConcurrentRowTensorStrategy::scale_row(Tensor* A, size_t row, float multiple) const {
+    simd_strategy->scale_row(A, row, multiple);
+}
+
 void ConcurrentRowTensorStrategy::apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const {
 
     size_t height = A->getHeight();

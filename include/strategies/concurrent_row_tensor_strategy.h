@@ -13,6 +13,10 @@ public:
 
     ConcurrentRowTensorStrategy() = default;
 
+    void swap_rows(Tensor* A, size_t row1, size_t row2) const override;
+    void subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const override;
+    void scale_row(Tensor* A, size_t row, float multiple) const override;
+
     void add(const Tensor* A, const Tensor* B, Tensor* result) const override; 
     void mult(const Tensor* A, const Tensor* B, Tensor* result) const override; 
     void transpose(const Tensor* A, Tensor* result) const override;

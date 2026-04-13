@@ -2,12 +2,11 @@
 #include "strategies/tensor_strategy.h"
 
 class SimdTensorStrategy : public TensorStrategy {
-private:
+
+public:
     void subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const override;
     void scale_row(Tensor* A, size_t row, float multiple) const override;
     void swap_rows(Tensor* A, size_t row1, size_t row2) const override;
-
-public:
 
     void process_add_block(
             const Tensor* A, 

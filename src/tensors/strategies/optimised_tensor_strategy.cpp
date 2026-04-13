@@ -45,3 +45,7 @@ void OptimisedTensorStrategy::apply(std::function<float(float)> f, const Tensor*
         simd_strategy->apply(f, A, result);
     }
 }
+
+void OptimisedTensorStrategy::inverse(const Tensor* A, Tensor* result) const {
+    simd_strategy->inverse(A, result);
+}
