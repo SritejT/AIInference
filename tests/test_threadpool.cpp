@@ -3,23 +3,20 @@
 #include <gtest/gtest.h>
 #include <random>
 
+class ThreadpoolTest : public testing::Test {
+protected:
+    inline static Threadpool& pool = Threadpool::get_instance();
+};
 
 
-TEST(Threadpool, CheckInit) {
-    auto& pool = Threadpool::get_instance();
-}
-
-TEST(Threadpool, CheckSubmit) {
-    auto& pool = Threadpool::get_instance();
-
-    auto future = pool.submit([]() { return 42; });
+TEST_F(ThreadpoolTest, CheckSubmit) {
+    auto future = ThreadpoolTest::pool.submit([]() { return 42; });
     auto result = future.get();
 
     ASSERT_EQ(result, 42);
 }
 
-TEST(Threadpool, CheckManyTasks) {
-    auto& pool = Threadpool::get_instance();
+TEST_F(ThreadpoolTest, CheckManyTasks) {
     std::vector<std::future<int>> futures;
 
     std::random_device rd;
@@ -28,7 +25,7 @@ TEST(Threadpool, CheckManyTasks) {
     for (int i = 0; i < 100; i++) {
 
         // Test tasks that may not be executed in the given order
-        auto future = pool.submit([i, &gen]() { 
+        auto future = ThreadpoolTest::pool.submit([i, &gen]() { 
             std::uniform_int_distribution<> dis(0, 100);
             std::this_thread::sleep_for(std::chrono::milliseconds(dis(gen)));
             return i; 
