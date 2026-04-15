@@ -3,6 +3,7 @@
 #include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
+#include "strategies/blocked_simd_tensor_strategy.h"
 
 template <typename Strategy>
 static void TensorSquareMatTranspose(benchmark::State& state) {
@@ -35,10 +36,12 @@ BENCHMARK(TensorSquareMatTranspose<BasicTensorStrategy>)->RangeMultiplier(2)->Ra
 BENCHMARK(TensorSquareMatTranspose<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 BENCHMARK(TensorSquareMatTranspose<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 BENCHMARK(TensorSquareMatTranspose<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorSquareMatTranspose<BlockedSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 
 BENCHMARK(TensorVecTranspose<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 BENCHMARK(TensorVecTranspose<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 BENCHMARK(TensorVecTranspose<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 BENCHMARK(TensorVecTranspose<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorVecTranspose<BlockedSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 
 BENCHMARK_MAIN();

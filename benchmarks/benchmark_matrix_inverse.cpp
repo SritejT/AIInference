@@ -2,6 +2,7 @@
 #include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
+#include "strategies/blocked_simd_tensor_strategy.h"
 
 #include <memory>
 #include <vector>
@@ -30,6 +31,7 @@ BENCHMARK(TensorSquareMatInverse<BasicTensorStrategy>)->RangeMultiplier(2)->Rang
 BENCHMARK(TensorSquareMatInverse<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 BENCHMARK(TensorSquareMatInverse<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 BENCHMARK(TensorSquareMatInverse<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorSquareMatInverse<BlockedSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
 
 BENCHMARK_MAIN();
 

@@ -6,6 +6,7 @@
 #include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
+#include "strategies/blocked_simd_tensor_strategy.h"
 
 template <typename Strategy>
 static void TensorSquareMatMul(benchmark::State& state) {
@@ -36,14 +37,16 @@ static void TensorMatxVecMul(benchmark::State& state) {
     }
 }
 
-BENCHMARK(TensorSquareMatMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
-BENCHMARK(TensorSquareMatMul<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
-BENCHMARK(TensorSquareMatMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
-BENCHMARK(TensorSquareMatMul<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorSquareMatMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorSquareMatMul<BlockedSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 
-BENCHMARK(TensorMatxVecMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
-BENCHMARK(TensorMatxVecMul<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
-BENCHMARK(TensorMatxVecMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
-BENCHMARK(TensorMatxVecMul<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 1024);
+BENCHMARK(TensorMatxVecMul<BasicTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<SimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<ConcurrentRowTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<OptimisedTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
+BENCHMARK(TensorMatxVecMul<BlockedSimdTensorStrategy>)->RangeMultiplier(2)->Range(2, 2048);
 
 BENCHMARK_MAIN();
