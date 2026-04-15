@@ -3,6 +3,7 @@
 #include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
+#include "strategies/blocked_simd_tensor_strategy.h"
 
 class MatrixSubtractTest : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
 
@@ -94,7 +95,8 @@ INSTANTIATE_TEST_SUITE_P(BasicTensorStrategy, MatrixSubtractTest, testing::Value
             std::make_shared<BasicTensorStrategy>(),
             std::make_shared<SimdTensorStrategy>(),
             std::make_shared<ConcurrentRowTensorStrategy>(),
-            std::make_shared<OptimisedTensorStrategy>()));
+            std::make_shared<OptimisedTensorStrategy>(),
+            std::make_shared<BlockedSimdTensorStrategy>()));
 
 
 

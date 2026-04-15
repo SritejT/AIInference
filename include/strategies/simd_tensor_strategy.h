@@ -23,8 +23,10 @@ public:
             Tensor* result,
             size_t start_row,
             size_t start_col,
+            size_t start_k,
             size_t end_row,
-            size_t end_col) const;
+            size_t end_col,
+            size_t end_k) const;
 
     void process_transpose_block(
             const Tensor* A,

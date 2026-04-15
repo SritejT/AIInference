@@ -2,6 +2,7 @@
 #include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
+#include "strategies/blocked_simd_tensor_strategy.h"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -57,7 +58,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_shared<BasicTensorStrategy>(),
         std::make_shared<SimdTensorStrategy>(),
         std::make_shared<ConcurrentRowTensorStrategy>(),
-        std::make_shared<OptimisedTensorStrategy>()
+        std::make_shared<OptimisedTensorStrategy>(),
+        std::make_shared<BlockedSimdTensorStrategy>()
     )
 );
 

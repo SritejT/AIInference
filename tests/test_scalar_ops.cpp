@@ -3,6 +3,7 @@
 #include "strategies/simd_tensor_strategy.h"
 #include "strategies/concurrent_row_tensor_strategy.h"
 #include "strategies/optimised_tensor_strategy.h"
+#include "strategies/blocked_simd_tensor_strategy.h"
 
 class TestScalarOps : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
 
@@ -37,7 +38,9 @@ TEST_P(TestScalarOps, TestScalarDiv) {
 }
 
 INSTANTIATE_TEST_CASE_P(TensorStrategies, TestScalarOps, testing::Values(
-                std::make_shared<BasicTensorStrategy>(),
-                std::make_shared<SimdTensorStrategy>(),
-                std::make_shared<ConcurrentRowTensorStrategy>(),
-                std::make_shared<OptimisedTensorStrategy>()));
+    std::make_shared<BasicTensorStrategy>(),
+    std::make_shared<SimdTensorStrategy>(),
+    std::make_shared<ConcurrentRowTensorStrategy>(),
+    std::make_shared<OptimisedTensorStrategy>(),
+    std::make_shared<BlockedSimdTensorStrategy>()
+));

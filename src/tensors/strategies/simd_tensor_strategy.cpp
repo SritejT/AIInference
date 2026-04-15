@@ -7,8 +7,10 @@ void SimdTensorStrategy::process_mult_block(
         Tensor* result,
         size_t start_row,
         size_t start_col,
+        size_t start_k,
         size_t end_row,
-        size_t end_col) const {
+        size_t end_col,
+        size_t end_k) const {
 
     size_t result_height = A->getHeight();
     size_t result_width = B->getWidth();
@@ -22,9 +24,9 @@ void SimdTensorStrategy::process_mult_block(
         for (; j+4 < end_col; j+=4) {
 
             // Accumulates result[i][j:j+4]
-            float32x4_t acc = vdupq_n_f32(0.0f);
+            float32x4_t acc = vld1q_f32(&result->data[i * result_width + j]); 
 
-            for (size_t k = 0; k < A_width; k++) {
+            for (size_t k = start_k; k < end_k; k++) {
                 float32x4_t va = vdupq_n_f32(A->data[i * A_width + k]);
                 float32x4_t vb = vld1q_f32(&B->data[k * result_width + j]);
                 acc = vmlaq_f32(acc, va, vb);
@@ -35,7 +37,7 @@ void SimdTensorStrategy::process_mult_block(
 
         for (; j < end_col; j++) {
             float sum = 0.0f;
-            for (size_t k = 0; k < A_width; k++) {
+            for (size_t k = start_k; k < end_k; k++) {
                 sum += A->data[i * A_width + k] * B->data[k * result_width + j];
             }
             result->data[i * result_width + j] = sum;
@@ -149,7 +151,7 @@ void SimdTensorStrategy::add(const Tensor* A, const Tensor* B, Tensor* result) c
 }
 
 void SimdTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* result) const {
-    process_mult_block(A, B, result, 0, 0, A->getHeight(), B->getWidth());
+    process_mult_block(A, B, result, 0, 0, 0, A->getHeight(), B->getWidth(), A->getWidth());
 }
 
 void SimdTensorStrategy::transpose(const Tensor* A, Tensor* result) const {

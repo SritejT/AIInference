@@ -56,8 +56,10 @@ void ConcurrentRowTensorStrategy::mult(
                 result,
                 i * height / num_threads,
                 0,
+                0,
                 (i + 1) * height / num_threads,
-                B->getWidth()
+                B->getWidth(),
+                A->getWidth()
             );
         });
 
