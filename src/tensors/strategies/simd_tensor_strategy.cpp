@@ -21,7 +21,7 @@ void SimdTensorStrategy::process_mult_block(
 
         size_t j = start_col;
 
-        for (; j+4 < end_col; j+=4) {
+        for (; j+4 <= end_col; j+=4) {
 
             // Accumulates result[i][j:j+4]
             float32x4_t acc = vld1q_f32(&result->data[i * result_width + j]); 
@@ -36,7 +36,7 @@ void SimdTensorStrategy::process_mult_block(
         }
 
         for (; j < end_col; j++) {
-            float sum = 0.0f;
+            float sum = result->data[i * result_width + j];
             for (size_t k = start_k; k < end_k; k++) {
                 sum += A->data[i * A_width + k] * B->data[k * result_width + j];
             }
