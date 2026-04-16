@@ -1,13 +1,13 @@
 #pragma once
 #include "strategies/tensor_strategy.h"
-#include "strategies/simd_tensor_strategy.h"
+#include "strategies/blocked_simd_tensor_strategy.h"
 #include "threadpool.h"
 
 class ConcurrentRowTensorStrategy : public TensorStrategy {
 
 private:
     inline static Threadpool& pool = Threadpool::get_instance();
-    inline static std::shared_ptr<SimdTensorStrategy> simd_strategy = std::make_shared<SimdTensorStrategy>();
+    inline static std::shared_ptr<BlockedSimdTensorStrategy> simd_strategy = std::make_shared<BlockedSimdTensorStrategy>();
 
 public:
 
