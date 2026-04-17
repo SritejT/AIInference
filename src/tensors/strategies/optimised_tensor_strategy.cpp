@@ -1,6 +1,6 @@
 #include "strategies/optimised_tensor_strategy.h"
-
-#define CONCURRENCY_THRESHOLD 1000000
+#define SIMD_THRESHOLD 50
+#define CONCURRENCY_THRESHOLD 500000
 
 void OptimisedTensorStrategy::add(const Tensor* A, const Tensor* B, Tensor* result) const {
 
