@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64")
 set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 add_compile_options(-fno-omit-frame-pointer)
-add_compile_options(-march=armv8.4-a+simd)
+add_compile_options(-march=armv8.4-a+sve)
 
 file(GLOB_RECURSE lib_sources "src/*.cpp")
 
