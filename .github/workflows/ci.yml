@@ -15,7 +15,7 @@ jobs:
       - name: Build
         run: |
           mkdir build && cd build
-          cmake ..
+          cmake .. -DENABLE_BENCHMARKS=OFF
           make -j$(nproc)
 
       - name: Run unit tests
