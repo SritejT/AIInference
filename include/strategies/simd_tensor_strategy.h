@@ -2,8 +2,16 @@
 #include "strategies/tensor_strategy.h"
 
 class SimdTensorStrategy : public TensorStrategy {
-
+private:
+    SimdTensorStrategy() = default; 
 public:
+
+    // Only make one instance that the whole program shares
+    static SimdTensorStrategy& get_instance() {
+        static SimdTensorStrategy instance;
+        return instance;
+    }
+
     void subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const override;
     void scale_row(Tensor* A, size_t row, float multiple) const override;
     void swap_rows(Tensor* A, size_t row1, size_t row2) const override;
@@ -46,4 +54,10 @@ public:
     void transpose(const Tensor* A, Tensor* result) const override;
 
     void apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const override;
+
+    SimdTensorStrategy(const SimdTensorStrategy&) = delete;
+    void operator=(const SimdTensorStrategy&) = delete;
+
+    SimdTensorStrategy(SimdTensorStrategy&&) = delete;
+    void operator=(SimdTensorStrategy&&) = delete;
 };

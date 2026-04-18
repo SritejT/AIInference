@@ -66,7 +66,7 @@ std::vector<Tensor> SafeTensorsParser::parse_data(std::vector<TensorInfo>& info)
                     d, 
                     t.shape[0], 
                     (t.shape.size() > 1 ? t.shape[1] : 1), 
-                    std::make_shared<ConcurrentRowTensorStrategy>()));
+                    &ConcurrentRowTensorStrategy::get_instance()));
     }
 
     return tensors; 

@@ -1,3 +1,5 @@
+![Tests](https://github.com/SritejT/AIInference/actions/workflows/ci.yml/badge.svg)
+
 ## Summary
 
 AIInference aims to be a high-performance, minimal dependency machine learning library written in C++. The long-term goal

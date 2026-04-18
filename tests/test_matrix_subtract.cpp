@@ -5,7 +5,7 @@
 #include "strategies/optimised_tensor_strategy.h"
 #include "strategies/blocked_simd_tensor_strategy.h"
 
-class MatrixSubtractTest : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
+class MatrixSubtractTest : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(MatrixSubtractTest, SmallMatrices) {
 
@@ -31,8 +31,8 @@ TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
 
     std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1000, 1000, std::shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 1000, 1000, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 1000, 1000, GetParam());
+    Tensor B = Tensor(b, 1000, 1000, GetParam());
 
     Tensor result = A - B;
     
@@ -54,8 +54,8 @@ TEST_P(MatrixSubtractTest, LargeNonSquareMatrices) {
 
     std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1000000, 1, std::shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, 1000000, 1, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, 1000000, 1, GetParam());
+    Tensor B = Tensor(b, 1000000, 1, GetParam());
 
     Tensor result = A - B;
     
@@ -78,8 +78,8 @@ TEST_P(MatrixSubtractTest, PrimeSizeMatrices) {
 
     std::vector<float> b = std::vector<float>(n * n, 1.0f);
 
-    Tensor A = Tensor(a, n, n, std::shared_ptr<TensorStrategy>(GetParam()));
-    Tensor B = Tensor(b, n, n, std::shared_ptr<TensorStrategy>(GetParam()));
+    Tensor A = Tensor(a, n, n, GetParam());
+    Tensor B = Tensor(b, n, n, GetParam());
 
     Tensor result = A - B;
     
@@ -92,11 +92,11 @@ TEST_P(MatrixSubtractTest, PrimeSizeMatrices) {
 }
 
 INSTANTIATE_TEST_SUITE_P(BasicTensorStrategy, MatrixSubtractTest, testing::Values(
-            std::make_shared<BasicTensorStrategy>(),
-            std::make_shared<SimdTensorStrategy>(),
-            std::make_shared<ConcurrentRowTensorStrategy>(),
-            std::make_shared<OptimisedTensorStrategy>(),
-            std::make_shared<BlockedSimdTensorStrategy>()));
-
+    &BasicTensorStrategy::get_instance(),
+    &SimdTensorStrategy::get_instance(),
+    &ConcurrentRowTensorStrategy::get_instance(),
+    &OptimisedTensorStrategy::get_instance(),
+    &BlockedSimdTensorStrategy::get_instance()
+));
 
 

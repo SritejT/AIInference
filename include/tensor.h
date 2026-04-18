@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <memory>
 #include <functional>
 
 class TensorStrategy; 
@@ -8,14 +7,14 @@ class TensorStrategy;
 class Tensor {
 private:
     size_t height, width;
-    std::shared_ptr<TensorStrategy> strategy;
+    TensorStrategy* strategy;
 
     Tensor apply(std::function<float(float)> f) const;
 
 public:
 
-    Tensor(size_t h, size_t w, std::shared_ptr<TensorStrategy> strategy);
-    Tensor(std::vector<float> d, size_t h, size_t w, std::shared_ptr<TensorStrategy> strategy);
+    Tensor(size_t h, size_t w, TensorStrategy* strategy);
+    Tensor(std::vector<float> d, size_t h, size_t w, TensorStrategy* strategy);
 
     std::vector<float> data;
 

@@ -15,7 +15,7 @@ void ConcurrentRowTensorStrategy::add(
     for (size_t i = 0; i < num_threads; i++) {
 
         auto fut = pool.submit([=, this]() {
-            simd_strategy->process_add_block(
+            simd_strategy.process_add_block(
                 A, 
                 B,
                 result,
@@ -50,7 +50,7 @@ void ConcurrentRowTensorStrategy::mult(
     for (size_t i = 0; i < num_threads; i++) {
 
         auto fut = pool.submit([=, this]() {
-            simd_strategy->process_mult_block(
+            simd_strategy.process_mult_block(
                 A, 
                 B,
                 result,
@@ -83,7 +83,7 @@ void ConcurrentRowTensorStrategy::transpose(const Tensor* A, Tensor* result) con
     for (size_t i = 0; i < num_threads; i++) {
 
         auto fut = pool.submit([=, this]() {
-            simd_strategy->process_transpose_block(
+            simd_strategy.process_transpose_block(
                 A, 
                 result,
                 i * height / num_threads,
@@ -101,15 +101,15 @@ void ConcurrentRowTensorStrategy::transpose(const Tensor* A, Tensor* result) con
 }
 
 void ConcurrentRowTensorStrategy::swap_rows(Tensor* A, size_t row1, size_t row2) const {
-    simd_strategy->swap_rows(A, row1, row2);
+    simd_strategy.swap_rows(A, row1, row2);
 }
 
 void ConcurrentRowTensorStrategy::subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const {
-    simd_strategy->subtract_rows(A, row1, row2, multiple);
+    simd_strategy.subtract_rows(A, row1, row2, multiple);
 }
 
 void ConcurrentRowTensorStrategy::scale_row(Tensor* A, size_t row, float multiple) const {
-    simd_strategy->scale_row(A, row, multiple);
+    simd_strategy.scale_row(A, row, multiple);
 }
 
 void ConcurrentRowTensorStrategy::apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const {
@@ -123,7 +123,7 @@ void ConcurrentRowTensorStrategy::apply(std::function<float(float)> f, const Ten
     for (size_t i = 0; i < num_threads; i++) {
 
         auto fut = pool.submit([=, this]() {
-            simd_strategy->process_apply_block(
+            simd_strategy.process_apply_block(
                 f,
                 A, 
                 result,

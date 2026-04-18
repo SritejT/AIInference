@@ -5,10 +5,17 @@
 
 class BlockedSimdTensorStrategy : public TensorStrategy {
 private:
-    inline static SimdTensorStrategy simd_strategy = SimdTensorStrategy();
-
+    BlockedSimdTensorStrategy() = default;
+    inline static SimdTensorStrategy& simd_strategy = SimdTensorStrategy::get_instance();
     
 public:
+    
+    // Only make one instance that the whole program shares
+    static BlockedSimdTensorStrategy& get_instance() {
+        static BlockedSimdTensorStrategy instance;
+        return instance;
+    }
+
     void subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const override;
     void scale_row(Tensor* A, size_t row, float multiple) const override;
     void swap_rows(Tensor* A, size_t row1, size_t row2) const override;
@@ -47,5 +54,10 @@ public:
             size_t end_row,
             size_t end_col) const;
 
+    BlockedSimdTensorStrategy(const BlockedSimdTensorStrategy&) = delete;
+    BlockedSimdTensorStrategy& operator=(const BlockedSimdTensorStrategy&) = delete;
+
+    BlockedSimdTensorStrategy(BlockedSimdTensorStrategy&&) = delete;
+    BlockedSimdTensorStrategy& operator=(BlockedSimdTensorStrategy&&) = delete;
 
 };

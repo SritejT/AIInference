@@ -3,7 +3,7 @@
 #include <iostream>
 #include "strategies/tensor_strategy.h"
 
-Tensor::Tensor(std::vector<float> d, size_t h, size_t w, std::shared_ptr<TensorStrategy> s) :
+Tensor::Tensor(std::vector<float> d, size_t h, size_t w, TensorStrategy* s) :
     width(w), height(h), data(d), strategy(s) {
 
     if (d.size() != h * w || h <= 0 || w <= 0) {
@@ -12,7 +12,7 @@ Tensor::Tensor(std::vector<float> d, size_t h, size_t w, std::shared_ptr<TensorS
 
 }
 
-Tensor::Tensor(size_t h, size_t w, std::shared_ptr<TensorStrategy> s) : 
+Tensor::Tensor(size_t h, size_t w, TensorStrategy* s) : 
     width(w), height(h), strategy(s) {
 
     if (h <= 0 || w <= 0) {

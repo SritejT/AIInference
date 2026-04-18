@@ -7,11 +7,15 @@ class ConcurrentRowTensorStrategy : public TensorStrategy {
 
 private:
     inline static Threadpool& pool = Threadpool::get_instance();
-    inline static std::shared_ptr<BlockedSimdTensorStrategy> simd_strategy = std::make_shared<BlockedSimdTensorStrategy>();
+    inline static BlockedSimdTensorStrategy& simd_strategy = BlockedSimdTensorStrategy::get_instance();
+    ConcurrentRowTensorStrategy() = default;
 
 public:
 
-    ConcurrentRowTensorStrategy() = default;
+    static ConcurrentRowTensorStrategy& get_instance() {
+        static ConcurrentRowTensorStrategy instance;
+        return instance;
+    } 
 
     void swap_rows(Tensor* A, size_t row1, size_t row2) const override;
     void subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const override;
@@ -22,6 +26,12 @@ public:
     void transpose(const Tensor* A, Tensor* result) const override;
 
     void apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const override;
+
+    ConcurrentRowTensorStrategy(const ConcurrentRowTensorStrategy&) = delete;
+    void operator=(const ConcurrentRowTensorStrategy&) = delete;
+
+    ConcurrentRowTensorStrategy(ConcurrentRowTensorStrategy&&) = delete;
+    void operator=(ConcurrentRowTensorStrategy&&) = delete;
 
 };
 

@@ -4,7 +4,6 @@
 #include "strategies/optimised_tensor_strategy.h"
 #include "strategies/blocked_simd_tensor_strategy.h"
 
-#include <memory>
 #include <vector>
 #include <benchmark/benchmark.h>
 
@@ -12,14 +11,14 @@ template<typename Strategy>
 static void TensorSquareMatInverse(benchmark::State& state) {
 
     int n = state.range(0);
-    auto strategy = std::make_shared<Strategy>();
+    auto& strategy = Strategy::get_instance();
 
     std::vector<float> a(n * n, 0.0f);
     for (int i=0; i<n; i++) {
         a[i*n + ((i + 1) % n)] = 1.0f;
     }
 
-    Tensor A = Tensor(a, n, n, strategy);
+    Tensor A = Tensor(a, n, n, &strategy);
     
     for (auto _ : state) {
         Tensor B = A.inverse();

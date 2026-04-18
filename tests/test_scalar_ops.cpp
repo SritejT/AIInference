@@ -5,11 +5,10 @@
 #include "strategies/optimised_tensor_strategy.h"
 #include "strategies/blocked_simd_tensor_strategy.h"
 
-class TestScalarOps : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
+class TestScalarOps : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(TestScalarOps, TestUnaryMinus) {
-    auto strategy = GetParam();
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, strategy);
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
     Tensor b = -a;
     ASSERT_EQ(b.data[0], -1.0f);
     ASSERT_EQ(b.data[1], -2.0f);
@@ -18,8 +17,7 @@ TEST_P(TestScalarOps, TestUnaryMinus) {
 }
 
 TEST_P(TestScalarOps, TestScalarMult) {
-    auto strategy = GetParam();
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, strategy);
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
     Tensor b = a * 2.0f;
     ASSERT_EQ(b.data[0], 2.0f);
     ASSERT_EQ(b.data[1], 4.0f);
@@ -28,8 +26,7 @@ TEST_P(TestScalarOps, TestScalarMult) {
 }
 
 TEST_P(TestScalarOps, TestScalarDiv) {
-    auto strategy = GetParam();
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, strategy);
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
     Tensor b = a / 2.0f;
     ASSERT_EQ(b.data[0], 0.5f);
     ASSERT_EQ(b.data[1], 1.0f);
@@ -38,9 +35,9 @@ TEST_P(TestScalarOps, TestScalarDiv) {
 }
 
 INSTANTIATE_TEST_CASE_P(TensorStrategies, TestScalarOps, testing::Values(
-    std::make_shared<BasicTensorStrategy>(),
-    std::make_shared<SimdTensorStrategy>(),
-    std::make_shared<ConcurrentRowTensorStrategy>(),
-    std::make_shared<OptimisedTensorStrategy>(),
-    std::make_shared<BlockedSimdTensorStrategy>()
+    &BasicTensorStrategy::get_instance(),
+    &SimdTensorStrategy::get_instance(),
+    &ConcurrentRowTensorStrategy::get_instance(),
+    &OptimisedTensorStrategy::get_instance(),
+    &BlockedSimdTensorStrategy::get_instance()
 ));

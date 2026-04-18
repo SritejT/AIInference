@@ -1,5 +1,5 @@
 #include "strategies/tensor_strategy.h"
-
+#include <stdexcept>
 
 void TensorStrategy::subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const {
 

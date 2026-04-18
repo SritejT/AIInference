@@ -6,12 +6,11 @@
 
 #include <gtest/gtest.h>
 
-class TestMatrixInverse : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
+class TestMatrixInverse : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(TestMatrixInverse, CheckIdentityInverse) {
 
-    auto strategy = GetParam();
-    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 1.0f}, 2, 2, strategy);
+    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 1.0f}, 2, 2, GetParam());
 
     Tensor Ainv = A.inverse();
 
@@ -23,8 +22,7 @@ TEST_P(TestMatrixInverse, CheckIdentityInverse) {
 
 TEST_P(TestMatrixInverse, Check2x2Inverse) {
 
-    auto strategy = GetParam();
-    Tensor A = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, strategy);
+    Tensor A = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
 
     Tensor Ainv = A.inverse();
 
@@ -36,14 +34,12 @@ TEST_P(TestMatrixInverse, Check2x2Inverse) {
 
 TEST_P(TestMatrixInverse, CheckLargeInverse) {
 
-    auto strategy = GetParam();
-
     std::vector<float> a(1000000, 0.0f);
     for (int i=0; i<1000; i++) {
         a[i*1000 + ((i + 1) % 1000)] = 1.0f;
     }
 
-    Tensor A = Tensor(a, 1000, 1000, strategy);
+    Tensor A = Tensor(a, 1000, 1000, GetParam());
 
     Tensor Ainv = A.inverse();
 
@@ -63,24 +59,22 @@ TEST_P(TestMatrixInverse, CheckLargeInverse) {
 
 TEST_P(TestMatrixInverse, CheckSingularInverse) {
 
-    auto strategy = GetParam();
-    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f}, 2, 2, strategy);
+    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f}, 2, 2, GetParam());
 
     ASSERT_THROW(A.inverse(), std::runtime_error);
 }
 
 TEST_P(TestMatrixInverse, CheckNonSquareInverse) {
 
-    auto strategy = GetParam();
-    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, 2, 3, strategy);
+    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, 2, 3, GetParam());
 
     ASSERT_THROW(A.inverse(), std::runtime_error);
 }
 
 INSTANTIATE_TEST_SUITE_P(TestMatrixInverse, TestMatrixInverse, testing::Values(
-    std::make_shared<BasicTensorStrategy>(),
-    std::make_shared<SimdTensorStrategy>(),
-    std::make_shared<ConcurrentRowTensorStrategy>(),
-    std::make_shared<OptimisedTensorStrategy>(),
-    std::make_shared<BlockedSimdTensorStrategy>()
+    &BasicTensorStrategy::get_instance(),
+    &SimdTensorStrategy::get_instance(),
+    &ConcurrentRowTensorStrategy::get_instance(),
+    &OptimisedTensorStrategy::get_instance(),
+    &BlockedSimdTensorStrategy::get_instance()
 ));

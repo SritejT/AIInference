@@ -10,12 +10,12 @@
 
 template <typename Strategy>
 static void TensorSquareMatMul(benchmark::State& state) {
+
     int n = state.range(0);
+    auto& strategy = Strategy::get_instance();
 
-    auto strategy = std::make_shared<Strategy>();
-
-    Tensor a(std::vector<float>(n * n, 1.0f), n, n, strategy);
-    Tensor b(std::vector<float>(n * n, 1.0f), n, n, strategy);
+    Tensor a(std::vector<float>(n * n, 1.0f), n, n, &strategy);
+    Tensor b(std::vector<float>(n * n, 1.0f), n, n, &strategy);
     for (auto _ : state) {
         Tensor c = a * b;
         benchmark::DoNotOptimize(c);
@@ -24,12 +24,12 @@ static void TensorSquareMatMul(benchmark::State& state) {
 
 template <typename Strategy>
 static void TensorMatxVecMul(benchmark::State& state) {
+
     int n = state.range(0);
+    auto& strategy = Strategy::get_instance();
 
-    auto strategy = std::make_shared<Strategy>();
-
-    Tensor a(std::vector<float>(n * n, 1.0f), n, n, strategy);
-    Tensor b(std::vector<float>(n, 1.0f), n, 1, strategy);
+    Tensor a(std::vector<float>(n * n, 1.0f), n, n, &strategy);
+    Tensor b(std::vector<float>(n, 1.0f), n, 1, &strategy);
 
     for (auto _ : state) {
         Tensor c = a * b;

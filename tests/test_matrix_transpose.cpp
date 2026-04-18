@@ -5,14 +5,12 @@
 #include "strategies/blocked_simd_tensor_strategy.h"
 
 #include <gtest/gtest.h>
-#include <memory>
 
-class MatrixTransposeTest : public testing::TestWithParam<std::shared_ptr<TensorStrategy>> {};
+class MatrixTransposeTest : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(MatrixTransposeTest, TransposeSmallMatrix) {
 
-    auto strategy = GetParam();
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, strategy);
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
 
     Tensor b = a.transpose();
 
@@ -26,8 +24,6 @@ TEST_P(MatrixTransposeTest, TransposeSmallMatrix) {
 
 TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
 
-    auto strategy = GetParam();
-
     std::vector<float> data(1000000);
 
     for (int i = 0; i < 1000; i++) {
@@ -36,7 +32,7 @@ TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
         }
     }
 
-    Tensor a = Tensor(data, 1000, 1000, strategy);
+    Tensor a = Tensor(data, 1000, 1000, GetParam());
 
     Tensor b = a.transpose();
 
@@ -51,17 +47,13 @@ TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
     
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    TestAllTransposeStrategies,
-    MatrixTransposeTest,
-    testing::Values(
-        std::make_shared<BasicTensorStrategy>(),
-        std::make_shared<SimdTensorStrategy>(),
-        std::make_shared<ConcurrentRowTensorStrategy>(),
-        std::make_shared<OptimisedTensorStrategy>(),
-        std::make_shared<BlockedSimdTensorStrategy>()
-    )
-);
+INSTANTIATE_TEST_SUITE_P(TestAllTransposeStrategies, MatrixTransposeTest, testing::Values(
+    &BasicTensorStrategy::get_instance(),
+    &SimdTensorStrategy::get_instance(),
+    &ConcurrentRowTensorStrategy::get_instance(),
+    &OptimisedTensorStrategy::get_instance(),
+    &BlockedSimdTensorStrategy::get_instance()
+));
 
 
 
