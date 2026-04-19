@@ -7,7 +7,7 @@ on:
     branches: ["*"]
 
 jobs:
-  test:
+  ASan + UBSan:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
@@ -15,9 +15,41 @@ jobs:
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. -DENABLE_BENCHMARKS=OFF
+          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_ASAN_UBSAN=ON -DENABLE_MSAN=OFF -DENABLE_TSAN=OFF
           make -j$(nproc)
 
       - name: Run unit tests
         run: |
           ./build/tests/all_tests
+
+  MSan:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_ASAN_UBSAN=OFF -DENABLE_MSAN=ON -DENABLE_TSAN=OFF
+          make -j$(nproc)
+
+      - name: Run unit tests
+        run: |
+          ./build/tests/all_tests
+
+  TSan:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_ASAN_UBSAN=OFF -DENABLE_MSAN=OFF -DENABLE_TSAN=ON
+          make -j$(nproc)
+
+      - name: Run unit tests
+        run: |
+          ./build/tests/all_tests
+
+
