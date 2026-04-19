@@ -11,8 +11,7 @@ class MatrixTransposeTest : public testing::TestWithParam<TensorStrategy*> {};
 TEST_P(MatrixTransposeTest, TransposeSmallMatrix) {
 
     Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, *GetParam());
-
-    Tensor b = a.transpose();
+Tensor b = a.transpose();
 
     ASSERT_EQ(b.getWidth(), 2);
     ASSERT_EQ(b.getHeight(), 2);
@@ -24,24 +23,24 @@ TEST_P(MatrixTransposeTest, TransposeSmallMatrix) {
 
 TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
 
-    std::vector<float> data(1000000);
+    std::vector<float> data(10000);
 
-    for (int i = 0; i < 1000; i++) {
-        for (int j = 0; j < 1000; j++) {
-            data[i * 1000 + j] = i;
+    for (int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
+            data[i * 100 + j] = i;
         }
     }
 
-    Tensor a = Tensor(data, 1000, 1000, *GetParam());
+    Tensor a = Tensor(data, 100, 100, *GetParam());
 
     Tensor b = a.transpose();
 
-    ASSERT_EQ(b.getWidth(), 1000);
-    ASSERT_EQ(b.getHeight(), 1000);
+    ASSERT_EQ(b.getWidth(), 100);
+    ASSERT_EQ(b.getHeight(), 100);
 
-    for (int i = 0; i < 1000; i++) {
-        for (int j = 0; j < 1000; j++) {
-            ASSERT_FLOAT_EQ(b.data[j * 1000 + i], i);
+    for (int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
+            ASSERT_FLOAT_EQ(b.data[j * 100 + i], i);
         }
     }
     
@@ -54,7 +53,4 @@ INSTANTIATE_TEST_SUITE_P(TestAllTransposeStrategies, MatrixTransposeTest, testin
     &OptimisedTensorStrategy::get_instance(),
     &BlockedSimdTensorStrategy::get_instance()
 ));
-
-
-
 

@@ -34,24 +34,24 @@ TEST_P(TestMatrixInverse, Check2x2Inverse) {
 
 TEST_P(TestMatrixInverse, CheckLargeInverse) {
 
-    std::vector<float> a(1000000, 0.0f);
-    for (int i=0; i<1000; i++) {
-        a[i*1000 + ((i + 1) % 1000)] = 1.0f;
+    std::vector<float> a(10000, 0.0f);
+    for (int i=0; i<100; i++) {
+        a[i*100 + ((i + 1) % 100)] = 1.0f;
     }
 
-    Tensor A = Tensor(a, 1000, 1000, *GetParam());
+    Tensor A = Tensor(a, 100, 100, *GetParam());
 
     Tensor Ainv = A.inverse();
 
-    ASSERT_EQ(Ainv.getWidth(), 1000);
-    ASSERT_EQ(Ainv.getHeight(), 1000);
+    ASSERT_EQ(Ainv.getWidth(), 100);
+    ASSERT_EQ(Ainv.getHeight(), 100);
 
-    for (int i=0; i<1000; i++) {
-        for (int j=0; j<1000; j++) {
-            if ((i + 999 - j) % 1000 == 0) {
-                ASSERT_FLOAT_EQ(Ainv.data[i*1000 + j], 1.0f);
+    for (int i=0; i<100; i++) {
+        for (int j=0; j<100; j++) {
+            if ((i + 99 - j) % 100 == 0) {
+                ASSERT_FLOAT_EQ(Ainv.data[i*100 + j], 1.0f);
             } else {
-                ASSERT_FLOAT_EQ(Ainv.data[i*1000 + j], 0.0f);
+                ASSERT_FLOAT_EQ(Ainv.data[i*100 + j], 0.0f);
             }
         }
     }

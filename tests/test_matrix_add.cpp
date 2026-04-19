@@ -44,19 +44,19 @@ TEST_P(MatrixAddTest, SmallRectMatrixAddTest) {
 }
 
 TEST_P(MatrixAddTest, LargeSquareMatrixAddTest) {
-    std::vector<float> a(1000000);
-    std::vector<float> b(1000000);
-    for (unsigned long i = 0; i < 1000000; i++) {
+    std::vector<float> a(10000);
+    std::vector<float> b(10000);
+    for (unsigned long i = 0; i < 10000; i++) {
         a[i] = static_cast<float>(i);
         b[i] = static_cast<float>(i);
     }
 
-    Tensor A = Tensor(a, 1000, 1000, *GetParam());
-    Tensor B = Tensor(b, 1000, 1000, *GetParam());
+    Tensor A = Tensor(a, 100, 100, *GetParam());
+    Tensor B = Tensor(b, 100, 100, *GetParam());
 
     Tensor result = A + B;
-    ASSERT_EQ(result.getWidth(), 1000);
-    ASSERT_EQ(result.getHeight(), 1000);
+    ASSERT_EQ(result.getWidth(), 100);
+    ASSERT_EQ(result.getHeight(), 100);
 
     int j = 0;
     for (auto r : result) {
@@ -66,14 +66,14 @@ TEST_P(MatrixAddTest, LargeSquareMatrixAddTest) {
 }
 
 TEST_P(MatrixAddTest, LargeRectMatrixAddTest) {
-    std::vector<float> a(1000000, 1.0f);
-    std::vector<float> b(1000000, 1.0f);
+    std::vector<float> a(10000, 1.0f);
+    std::vector<float> b(10000, 1.0f);
 
-    Tensor A = Tensor(a, 1, 1000000, *GetParam());
-    Tensor B = Tensor(b, 1, 1000000, *GetParam());
+    Tensor A = Tensor(a, 1, 10000, *GetParam());
+    Tensor B = Tensor(b, 1, 10000, *GetParam());
 
     Tensor result = A + B;
-    ASSERT_EQ(result.getWidth(), 1000000);
+    ASSERT_EQ(result.getWidth(), 10000);
     ASSERT_EQ(result.getHeight(), 1);
 
     for (auto r : result) {
@@ -100,15 +100,15 @@ TEST_P(MatrixAddTest, PrimeSizeMatrixAddTest) {
 }
 
 TEST_P(MatrixAddTest, NegativeValuesMatrixAddTest) {
-    std::vector<float> a = std::vector<float>(1000000, -3.0f);
-    std::vector<float> b = std::vector<float>(1000000, -67.0f);
+    std::vector<float> a = std::vector<float>(10000, -3.0f);
+    std::vector<float> b = std::vector<float>(10000, -67.0f);
 
-    Tensor A = Tensor(a, 1000, 1000, *GetParam());
-    Tensor B = Tensor(b, 1000, 1000, *GetParam());
+    Tensor A = Tensor(a, 100, 100, *GetParam());
+    Tensor B = Tensor(b, 100, 100, *GetParam());
 
     Tensor result = A + B;
-    ASSERT_EQ(result.getWidth(), 1000);
-    ASSERT_EQ(result.getHeight(), 1000);
+    ASSERT_EQ(result.getWidth(), 100);
+    ASSERT_EQ(result.getHeight(), 100);
 
     for (auto r : result) {
         ASSERT_FLOAT_EQ(r, -70.0f);

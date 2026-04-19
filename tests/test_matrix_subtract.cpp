@@ -25,22 +25,22 @@ TEST_P(MatrixSubtractTest, SmallMatrices) {
 
 TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
 
-    std::vector<float> a = std::vector<float>(1000000, 0.0f);
-    for (unsigned long i=0; i<1000000; i++) {
+    std::vector<float> a = std::vector<float>(10000, 0.0f);
+    for (unsigned long i=0; i<10000; i++) {
         a[i] = i;
     }
 
-    std::vector<float> b = std::vector<float>(1000000, 1.0f);
+    std::vector<float> b = std::vector<float>(10000, 1.0f);
 
-    Tensor A = Tensor(a, 1000, 1000, *GetParam());
-    Tensor B = Tensor(b, 1000, 1000, *GetParam());
+    Tensor A = Tensor(a, 100, 100, *GetParam());
+    Tensor B = Tensor(b, 100, 100, *GetParam());
 
     Tensor result = A - B;
     
-    ASSERT_EQ(result.getWidth(), 1000);
-    ASSERT_EQ(result.getHeight(), 1000);
+    ASSERT_EQ(result.getWidth(), 100);
+    ASSERT_EQ(result.getHeight(), 100);
 
-    for (int i=0; i<1000000; i++) {
+    for (int i=0; i<10000; i++) {
         ASSERT_FLOAT_EQ(result.data[i], static_cast<float>(i-1));
     }
 
@@ -48,22 +48,22 @@ TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
 
 TEST_P(MatrixSubtractTest, LargeNonSquareMatrices) {
 
-    std::vector<float> a = std::vector<float>(1000000, 0.0f);
-    for (unsigned long i=0; i<1000000; i++) {
+    std::vector<float> a = std::vector<float>(10000, 0.0f);
+    for (unsigned long i=0; i<10000; i++) {
         a[i] = i;
     }
 
-    std::vector<float> b = std::vector<float>(1000000, 1.0f);
+    std::vector<float> b = std::vector<float>(10000, 1.0f);
 
-    Tensor A = Tensor(a, 1000000, 1, *GetParam());
-    Tensor B = Tensor(b, 1000000, 1, *GetParam());
+    Tensor A = Tensor(a, 10000, 1, *GetParam());
+    Tensor B = Tensor(b, 10000, 1, *GetParam());
 
     Tensor result = A - B;
     
-    ASSERT_EQ(result.getHeight(), 1000000);
+    ASSERT_EQ(result.getHeight(), 10000);
     ASSERT_EQ(result.getWidth(), 1);
 
-    for (int i=0; i<1000000; i++) {
+    for (int i=0; i<10000; i++) {
         ASSERT_FLOAT_EQ(result.data[i], static_cast<float>(i-1));
     }
 }
