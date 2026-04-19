@@ -21,7 +21,7 @@ TEST_P(MatrixAddTest, SmallSquareMatrixAddTest) {
 
     int j = 0;
     for (auto r : result) {
-        EXPECT_EQ(r, expected[j]);
+        ASSERT_FLOAT_EQ(r, expected[j]);
         j++;
     }
 }
@@ -38,7 +38,7 @@ TEST_P(MatrixAddTest, SmallRectMatrixAddTest) {
 
     int j = 0;
     for (auto r : result) {
-        EXPECT_EQ(r, expected[j]);
+        ASSERT_FLOAT_EQ(r, expected[j]);
         j++;
     }
 }
@@ -60,7 +60,7 @@ TEST_P(MatrixAddTest, LargeSquareMatrixAddTest) {
 
     int j = 0;
     for (auto r : result) {
-        EXPECT_EQ(r, static_cast<float>(j) * 2.0f);
+        ASSERT_FLOAT_EQ(r, static_cast<float>(j) * 2.0f);
         j++;
     }
 }
@@ -77,7 +77,7 @@ TEST_P(MatrixAddTest, LargeRectMatrixAddTest) {
     ASSERT_EQ(result.getHeight(), 1);
 
     for (auto r : result) {
-        EXPECT_EQ(r, 2.0f);
+        ASSERT_FLOAT_EQ(r, 2.0f);
     }
 }
 
@@ -95,7 +95,7 @@ TEST_P(MatrixAddTest, PrimeSizeMatrixAddTest) {
     ASSERT_EQ(result.getHeight(), 67);
 
     for (auto r : result) {
-        EXPECT_EQ(r, 3.0f);
+        ASSERT_FLOAT_EQ(r, 3.0f);
     }
 }
 
@@ -111,7 +111,7 @@ TEST_P(MatrixAddTest, NegativeValuesMatrixAddTest) {
     ASSERT_EQ(result.getHeight(), 1000);
 
     for (auto r : result) {
-        EXPECT_EQ(r, -70.0f);
+        ASSERT_FLOAT_EQ(r, -70.0f);
     }
 }
 
@@ -127,7 +127,7 @@ TEST_P(MatrixAddTest, LargeValuesMatrixAddTest) {
     ASSERT_EQ(result.getHeight(), 10);
 
     for (auto r : result) {
-        EXPECT_EQ(r, 30000.0f);
+        ASSERT_FLOAT_EQ(r, 30000.0f);
     }
 }
 

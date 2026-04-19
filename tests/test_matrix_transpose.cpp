@@ -16,10 +16,10 @@ TEST_P(MatrixTransposeTest, TransposeSmallMatrix) {
 
     ASSERT_EQ(b.getWidth(), 2);
     ASSERT_EQ(b.getHeight(), 2);
-    ASSERT_EQ(b.data[0], 1.0f);
-    ASSERT_EQ(b.data[1], 3.0f);
-    ASSERT_EQ(b.data[2], 2.0f);
-    ASSERT_EQ(b.data[3], 4.0f);
+    ASSERT_FLOAT_EQ(b.data[0], 1.0f);
+    ASSERT_FLOAT_EQ(b.data[1], 3.0f);
+    ASSERT_FLOAT_EQ(b.data[2], 2.0f);
+    ASSERT_FLOAT_EQ(b.data[3], 4.0f);
 }
 
 TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
@@ -41,7 +41,7 @@ TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
 
     for (int i = 0; i < 1000; i++) {
         for (int j = 0; j < 1000; j++) {
-            ASSERT_EQ(b.data[j * 1000 + i], i);
+            ASSERT_FLOAT_EQ(b.data[j * 1000 + i], i);
         }
     }
     

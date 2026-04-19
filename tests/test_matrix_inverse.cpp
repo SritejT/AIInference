@@ -14,10 +14,10 @@ TEST_P(TestMatrixInverse, CheckIdentityInverse) {
 
     Tensor Ainv = A.inverse();
 
-    ASSERT_EQ(Ainv.data[0], 1.0f);
-    ASSERT_EQ(Ainv.data[1], 0.0f);
-    ASSERT_EQ(Ainv.data[2], 0.0f);
-    ASSERT_EQ(Ainv.data[3], 1.0f);
+    ASSERT_FLOAT_EQ(Ainv.data[0], 1.0f);
+    ASSERT_FLOAT_EQ(Ainv.data[1], 0.0f);
+    ASSERT_FLOAT_EQ(Ainv.data[2], 0.0f);
+    ASSERT_FLOAT_EQ(Ainv.data[3], 1.0f);
 }
 
 TEST_P(TestMatrixInverse, Check2x2Inverse) {
@@ -26,10 +26,10 @@ TEST_P(TestMatrixInverse, Check2x2Inverse) {
 
     Tensor Ainv = A.inverse();
 
-    ASSERT_EQ(Ainv.data[0], -2.0f);
-    ASSERT_EQ(Ainv.data[1], 1.0f);
-    ASSERT_EQ(Ainv.data[2], 1.5f);
-    ASSERT_EQ(Ainv.data[3], -0.5f);
+    ASSERT_FLOAT_EQ(Ainv.data[0], -2.0f);
+    ASSERT_FLOAT_EQ(Ainv.data[1], 1.0f);
+    ASSERT_FLOAT_EQ(Ainv.data[2], 1.5f);
+    ASSERT_FLOAT_EQ(Ainv.data[3], -0.5f);
 }
 
 TEST_P(TestMatrixInverse, CheckLargeInverse) {
@@ -49,9 +49,9 @@ TEST_P(TestMatrixInverse, CheckLargeInverse) {
     for (int i=0; i<1000; i++) {
         for (int j=0; j<1000; j++) {
             if ((i + 999 - j) % 1000 == 0) {
-                ASSERT_EQ(Ainv.data[i*1000 + j], 1.0f);
+                ASSERT_FLOAT_EQ(Ainv.data[i*1000 + j], 1.0f);
             } else {
-                ASSERT_EQ(Ainv.data[i*1000 + j], 0.0f);
+                ASSERT_FLOAT_EQ(Ainv.data[i*1000 + j], 0.0f);
             }
         }
     }

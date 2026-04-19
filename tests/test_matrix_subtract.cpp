@@ -16,10 +16,11 @@ TEST_P(MatrixSubtractTest, SmallMatrices) {
 
     ASSERT_EQ(result.getWidth(), 2);
     ASSERT_EQ(result.getHeight(), 2);
-    ASSERT_EQ(result.data[0], -4.0f);
-    ASSERT_EQ(result.data[1], -4.0f);
-    ASSERT_EQ(result.data[2], -4.0f);
-    ASSERT_EQ(result.data[3], -4.0f);
+
+    ASSERT_FLOAT_EQ(result.data[0], -4.0f);
+    ASSERT_FLOAT_EQ(result.data[1], -4.0f);
+    ASSERT_FLOAT_EQ(result.data[2], -4.0f);
+    ASSERT_FLOAT_EQ(result.data[3], -4.0f);
 }
 
 TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
@@ -40,7 +41,7 @@ TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
     ASSERT_EQ(result.getHeight(), 1000);
 
     for (int i=0; i<1000000; i++) {
-        ASSERT_EQ(result.data[i], static_cast<float>(i-1));
+        ASSERT_FLOAT_EQ(result.data[i], static_cast<float>(i-1));
     }
 
 }
@@ -63,7 +64,7 @@ TEST_P(MatrixSubtractTest, LargeNonSquareMatrices) {
     ASSERT_EQ(result.getWidth(), 1);
 
     for (int i=0; i<1000000; i++) {
-        ASSERT_EQ(result.data[i], static_cast<float>(i-1));
+        ASSERT_FLOAT_EQ(result.data[i], static_cast<float>(i-1));
     }
 }
 
@@ -87,7 +88,7 @@ TEST_P(MatrixSubtractTest, PrimeSizeMatrices) {
     ASSERT_EQ(result.getHeight(), n);
 
     for (int i=0; i<n*n; i++) {
-        ASSERT_EQ(result.data[i], static_cast<float>(i-1));
+        ASSERT_FLOAT_EQ(result.data[i], static_cast<float>(i-1));
     }
 }
 
