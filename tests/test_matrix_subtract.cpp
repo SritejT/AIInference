@@ -9,8 +9,8 @@ class MatrixSubtractTest : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(MatrixSubtractTest, SmallMatrices) {
 
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, GetParam());
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, *GetParam());
+    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, *GetParam());
 
     Tensor result = a - b;
 
@@ -32,8 +32,8 @@ TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
 
     std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1000, 1000, GetParam());
-    Tensor B = Tensor(b, 1000, 1000, GetParam());
+    Tensor A = Tensor(a, 1000, 1000, *GetParam());
+    Tensor B = Tensor(b, 1000, 1000, *GetParam());
 
     Tensor result = A - B;
     
@@ -55,8 +55,8 @@ TEST_P(MatrixSubtractTest, LargeNonSquareMatrices) {
 
     std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1000000, 1, GetParam());
-    Tensor B = Tensor(b, 1000000, 1, GetParam());
+    Tensor A = Tensor(a, 1000000, 1, *GetParam());
+    Tensor B = Tensor(b, 1000000, 1, *GetParam());
 
     Tensor result = A - B;
     
@@ -79,8 +79,8 @@ TEST_P(MatrixSubtractTest, PrimeSizeMatrices) {
 
     std::vector<float> b = std::vector<float>(n * n, 1.0f);
 
-    Tensor A = Tensor(a, n, n, GetParam());
-    Tensor B = Tensor(b, n, n, GetParam());
+    Tensor A = Tensor(a, n, n, *GetParam());
+    Tensor B = Tensor(b, n, n, *GetParam());
 
     Tensor result = A - B;
     

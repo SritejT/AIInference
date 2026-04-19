@@ -10,7 +10,7 @@ class TestMatrixInverse : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(TestMatrixInverse, CheckIdentityInverse) {
 
-    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 1.0f}, 2, 2, GetParam());
+    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 1.0f}, 2, 2, *GetParam());
 
     Tensor Ainv = A.inverse();
 
@@ -22,7 +22,7 @@ TEST_P(TestMatrixInverse, CheckIdentityInverse) {
 
 TEST_P(TestMatrixInverse, Check2x2Inverse) {
 
-    Tensor A = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
+    Tensor A = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, *GetParam());
 
     Tensor Ainv = A.inverse();
 
@@ -39,7 +39,7 @@ TEST_P(TestMatrixInverse, CheckLargeInverse) {
         a[i*1000 + ((i + 1) % 1000)] = 1.0f;
     }
 
-    Tensor A = Tensor(a, 1000, 1000, GetParam());
+    Tensor A = Tensor(a, 1000, 1000, *GetParam());
 
     Tensor Ainv = A.inverse();
 
@@ -59,14 +59,14 @@ TEST_P(TestMatrixInverse, CheckLargeInverse) {
 
 TEST_P(TestMatrixInverse, CheckSingularInverse) {
 
-    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f}, 2, 2, GetParam());
+    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f}, 2, 2, *GetParam());
 
     ASSERT_THROW(A.inverse(), std::runtime_error);
 }
 
 TEST_P(TestMatrixInverse, CheckNonSquareInverse) {
 
-    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, 2, 3, GetParam());
+    Tensor A = Tensor({1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, 2, 3, *GetParam());
 
     ASSERT_THROW(A.inverse(), std::runtime_error);
 }

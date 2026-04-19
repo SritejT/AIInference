@@ -10,7 +10,7 @@ class MatrixTransposeTest : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(MatrixTransposeTest, TransposeSmallMatrix) {
 
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, *GetParam());
 
     Tensor b = a.transpose();
 
@@ -32,7 +32,7 @@ TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
         }
     }
 
-    Tensor a = Tensor(data, 1000, 1000, GetParam());
+    Tensor a = Tensor(data, 1000, 1000, *GetParam());
 
     Tensor b = a.transpose();
 

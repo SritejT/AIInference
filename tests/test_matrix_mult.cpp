@@ -10,8 +10,8 @@
 class MatrixMultTest : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(MatrixMultTest, SmallSquareMatrixMultTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, GetParam());
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, *GetParam());
+    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, *GetParam());
 
     Tensor result = a * b;
     ASSERT_EQ(result.getWidth(), 2);
@@ -28,8 +28,8 @@ TEST_P(MatrixMultTest, SmallSquareMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, SmallRectMatrixMultTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 4, GetParam());
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, *GetParam());
+    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 4, *GetParam());
 
     Tensor result = a * b;
     ASSERT_EQ(result.getWidth(), 4);
@@ -56,8 +56,8 @@ TEST_P(MatrixMultTest, LargeSquareMatrixMultTest) {
         b[i] = static_cast<float>(i);
     }
 
-    Tensor A = Tensor(a, 1000, 1000, GetParam());
-    Tensor B = Tensor(b, 1000, 1000, GetParam());
+    Tensor A = Tensor(a, 1000, 1000, *GetParam());
+    Tensor B = Tensor(b, 1000, 1000, *GetParam());
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 1000);
@@ -74,8 +74,8 @@ TEST_P(MatrixMultTest, LargeRectMatrixMultTest) {
     std::vector<float> a = std::vector<float>(1000000, 1.0f);
     std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1, 1000000, GetParam());
-    Tensor B = Tensor(b, 1000000, 1, GetParam());
+    Tensor A = Tensor(a, 1, 1000000, *GetParam());
+    Tensor B = Tensor(b, 1000000, 1, *GetParam());
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 1);
@@ -93,8 +93,8 @@ TEST_P(MatrixMultTest, PrimeSizeMatrixMultTest) {
     std::vector<float> a = std::vector<float>(67, 1.0f);
     std::vector<float> b = std::vector<float>(67, 1.0f);
 
-    Tensor A = Tensor(a, 67, 1, GetParam());
-    Tensor B = Tensor(b, 1, 67, GetParam());
+    Tensor A = Tensor(a, 67, 1, *GetParam());
+    Tensor B = Tensor(b, 1, 67, *GetParam());
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 67);
@@ -109,8 +109,8 @@ TEST_P(MatrixMultTest, NegativeValuesMatrixMultTest) {
     std::vector<float> a = std::vector<float>(1000000, -3.0f);
     std::vector<float> b = std::vector<float>(1000000, -67.0f);
 
-    Tensor A = Tensor(a, 1000, 1000, GetParam());
-    Tensor B = Tensor(b, 1000, 1000, GetParam());
+    Tensor A = Tensor(a, 1000, 1000, *GetParam());
+    Tensor B = Tensor(b, 1000, 1000, *GetParam());
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 1000);
@@ -125,8 +125,8 @@ TEST_P(MatrixMultTest, LargeValuesMatrixMultTest) {
     std::vector<float> a = std::vector<float>(100, 20000.0f);
     std::vector<float> b = std::vector<float>(100, 10000.0f);
 
-    Tensor A = Tensor(a, 10, 10, GetParam());
-    Tensor B = Tensor(b, 10, 10, GetParam());
+    Tensor A = Tensor(a, 10, 10, *GetParam());
+    Tensor B = Tensor(b, 10, 10, *GetParam());
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 10);
@@ -141,8 +141,8 @@ TEST_P(MatrixMultTest, InvalidMultTest) {
     std::vector<float> a = std::vector<float>(1000000, 1.0f);
     std::vector<float> b = std::vector<float>(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1, 1000000, GetParam());
-    Tensor B = Tensor(b, 1, 1000000, GetParam());
+    Tensor A = Tensor(a, 1, 1000000, *GetParam());
+    Tensor B = Tensor(b, 1, 1000000, *GetParam());
 
     ASSERT_THROW(A * B, std::runtime_error);
 }

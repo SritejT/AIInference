@@ -18,7 +18,7 @@ static void TensorSquareMatInverse(benchmark::State& state) {
         a[i*n + ((i + 1) % n)] = 1.0f;
     }
 
-    Tensor A = Tensor(a, n, n, &strategy);
+    Tensor A = Tensor(a, n, n, strategy);
     
     for (auto _ : state) {
         Tensor B = A.inverse();

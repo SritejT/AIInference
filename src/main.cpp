@@ -10,8 +10,8 @@ int main() {
 
     TensorStrategy& strategy = BlockedSimdTensorStrategy::get_instance();
 
-    Tensor A = Tensor(a, n, n, &strategy);
-    Tensor B = Tensor(b, n, n, &strategy);
+    Tensor A = Tensor(a, n, n, strategy);
+    Tensor B = Tensor(b, n, n, strategy);
 
     Tensor result = A * B;
 

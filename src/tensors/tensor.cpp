@@ -3,7 +3,7 @@
 #include <iostream>
 #include "strategies/tensor_strategy.h"
 
-Tensor::Tensor(std::vector<float> d, size_t h, size_t w, TensorStrategy* s) :
+Tensor::Tensor(std::vector<float> d, size_t h, size_t w, TensorStrategy& s) :
     width(w), height(h), data(d), strategy(s) {
 
     if (d.size() != h * w || h <= 0 || w <= 0) {
@@ -12,7 +12,7 @@ Tensor::Tensor(std::vector<float> d, size_t h, size_t w, TensorStrategy* s) :
 
 }
 
-Tensor::Tensor(size_t h, size_t w, TensorStrategy* s) : 
+Tensor::Tensor(size_t h, size_t w, TensorStrategy& s) : 
     width(w), height(h), strategy(s) {
 
     if (h <= 0 || w <= 0) {
@@ -42,7 +42,7 @@ std::vector<float>::const_iterator Tensor::end() {
 
 Tensor Tensor::apply(std::function<float(float)> f) const {
     Tensor result(height, width, strategy);
-    strategy->apply(f, this, &result);
+    strategy.apply(f, this, &result);
     return result;
 }
 
@@ -52,7 +52,7 @@ Tensor Tensor::operator+(const Tensor& other) const {
     }
 
     Tensor result(height, width, strategy);
-    strategy->add(this, &other, &result); 
+    strategy.add(this, &other, &result); 
     return result;
 }
 
@@ -77,7 +77,7 @@ Tensor Tensor::operator*(const Tensor& other) const {
     }
 
     Tensor result(height, other.width, strategy);
-    strategy->mult(this, &other, &result);
+    strategy.mult(this, &other, &result);
     return result;
 
 }
@@ -92,7 +92,7 @@ Tensor Tensor::operator/(float scalar) const {
 
 Tensor Tensor::transpose() const {
     Tensor result(width, height, strategy);
-    strategy->transpose(this, &result);
+    strategy.transpose(this, &result);
     return result;
 }
 
@@ -102,7 +102,7 @@ Tensor Tensor::inverse() const {
     }
 
     Tensor result(width, height, strategy);
-    strategy->inverse(this, &result);
+    strategy.inverse(this, &result);
     return result;
 }
 

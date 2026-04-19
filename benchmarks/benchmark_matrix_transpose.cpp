@@ -11,7 +11,7 @@ static void TensorSquareMatTranspose(benchmark::State& state) {
     int n = state.range(0);
     auto& strategy = Strategy::get_instance();
 
-    Tensor a(std::vector<float>(n * n, 1.0f), n, n, &strategy);
+    Tensor a(std::vector<float>(n * n, 1.0f), n, n, strategy);
     for (auto _ : state) {
         Tensor c = a.transpose();
         benchmark::DoNotOptimize(c);
@@ -24,7 +24,7 @@ static void TensorVecTranspose(benchmark::State& state) {
     int n = state.range(0);
     auto& strategy = Strategy::get_instance();
 
-    Tensor a(std::vector<float>(n, 1.0f), n, 1, &strategy);
+    Tensor a(std::vector<float>(n, 1.0f), n, 1, strategy);
 
     for (auto _ : state) {
         Tensor c = a.transpose();

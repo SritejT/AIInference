@@ -10,8 +10,8 @@
 class MatrixAddTest : public testing::TestWithParam<TensorStrategy*> {};
 
 TEST_P(MatrixAddTest, SmallSquareMatrixAddTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, GetParam());
-    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, GetParam());
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f}, 2, 2, *GetParam());
+    Tensor b = Tensor({5.0f, 6.0f, 7.0f, 8.0f}, 2, 2, *GetParam());
 
     Tensor result = a + b;
     ASSERT_EQ(result.getWidth(), 2);
@@ -27,8 +27,8 @@ TEST_P(MatrixAddTest, SmallSquareMatrixAddTest) {
 }
 
 TEST_P(MatrixAddTest, SmallRectMatrixAddTest) {
-    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 2, 3, GetParam());
-    Tensor b = Tensor({7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 3, GetParam());
+    Tensor a = Tensor({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f}, 2, 3, *GetParam());
+    Tensor b = Tensor({7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f}, 2, 3, *GetParam());
 
     Tensor result = a + b;
     ASSERT_EQ(result.getWidth(), 3);
@@ -51,8 +51,8 @@ TEST_P(MatrixAddTest, LargeSquareMatrixAddTest) {
         b[i] = static_cast<float>(i);
     }
 
-    Tensor A = Tensor(a, 1000, 1000, GetParam());
-    Tensor B = Tensor(b, 1000, 1000, GetParam());
+    Tensor A = Tensor(a, 1000, 1000, *GetParam());
+    Tensor B = Tensor(b, 1000, 1000, *GetParam());
 
     Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1000);
@@ -69,8 +69,8 @@ TEST_P(MatrixAddTest, LargeRectMatrixAddTest) {
     std::vector<float> a(1000000, 1.0f);
     std::vector<float> b(1000000, 1.0f);
 
-    Tensor A = Tensor(a, 1, 1000000, GetParam());
-    Tensor B = Tensor(b, 1, 1000000, GetParam());
+    Tensor A = Tensor(a, 1, 1000000, *GetParam());
+    Tensor B = Tensor(b, 1, 1000000, *GetParam());
 
     Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1000000);
@@ -87,8 +87,8 @@ TEST_P(MatrixAddTest, PrimeSizeMatrixAddTest) {
     std::vector<float> a(67, 1.0f);
     std::vector<float> b(67, 2.0f);
 
-    Tensor A = Tensor(a, 67, 1, GetParam());
-    Tensor B = Tensor(b, 67, 1, GetParam());
+    Tensor A = Tensor(a, 67, 1, *GetParam());
+    Tensor B = Tensor(b, 67, 1, *GetParam());
 
     Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1);
@@ -103,8 +103,8 @@ TEST_P(MatrixAddTest, NegativeValuesMatrixAddTest) {
     std::vector<float> a = std::vector<float>(1000000, -3.0f);
     std::vector<float> b = std::vector<float>(1000000, -67.0f);
 
-    Tensor A = Tensor(a, 1000, 1000, GetParam());
-    Tensor B = Tensor(b, 1000, 1000, GetParam());
+    Tensor A = Tensor(a, 1000, 1000, *GetParam());
+    Tensor B = Tensor(b, 1000, 1000, *GetParam());
 
     Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 1000);
@@ -119,8 +119,8 @@ TEST_P(MatrixAddTest, LargeValuesMatrixAddTest) {
     std::vector<float> a = std::vector<float>(100, 20000.0f);
     std::vector<float> b = std::vector<float>(100, 10000.0f);
 
-    Tensor A = Tensor(a, 10, 10, GetParam());
-    Tensor B = Tensor(b, 10, 10, GetParam());
+    Tensor A = Tensor(a, 10, 10, *GetParam());
+    Tensor B = Tensor(b, 10, 10, *GetParam());
 
     Tensor result = A + B;
     ASSERT_EQ(result.getWidth(), 10);
@@ -135,8 +135,8 @@ TEST_P(MatrixAddTest, InvalidAddTest) {
     std::vector<float> a = std::vector<float>(100, 20000.0f);
     std::vector<float> b = std::vector<float>(100, 10000.0f);
 
-    Tensor A = Tensor(a, 10, 10, GetParam());
-    Tensor B = Tensor(b, 100, 1, GetParam());
+    Tensor A = Tensor(a, 10, 10, *GetParam());
+    Tensor B = Tensor(b, 100, 1, *GetParam());
 
     ASSERT_THROW(A + B, std::runtime_error);
 }
