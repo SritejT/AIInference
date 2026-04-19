@@ -1,55 +1,47 @@
 name: CI
-
 on:
   push:
     branches: ["*"]
   pull_request:
     branches: ["*"]
-
 jobs:
-  ASan + UBSan:
+  asan_ubsan:
+    name: ASan + UBSan
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
-
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_ASAN_UBSAN=ON -DENABLE_MSAN=OFF -DENABLE_TSAN=OFF
+          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_ASAN_UBSAN=ON
           make -j$(nproc)
-
       - name: Run unit tests
-        run: |
-          ./build/tests/all_tests
+        run: ./build/tests/all_tests
 
-  MSan:
+  msan:
+    name: MSan
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
-
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_ASAN_UBSAN=OFF -DENABLE_MSAN=ON -DENABLE_TSAN=OFF
+          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_MSAN=ON
           make -j$(nproc)
-
       - name: Run unit tests
-        run: |
-          ./build/tests/all_tests
+        run: ./build/tests/all_tests
 
-  TSan:
+  tsan:
+    name: TSan
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
-
+      - name: Fix TSan memory mapping
+        run: sudo sysctl vm.mmap_rnd_bits=28
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_ASAN_UBSAN=OFF -DENABLE_MSAN=OFF -DENABLE_TSAN=ON
+          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_TSAN=ON
           make -j$(nproc)
-
       - name: Run unit tests
-        run: |
-          ./build/tests/all_tests
-
-
+        run: ./build/tests/all_tests
