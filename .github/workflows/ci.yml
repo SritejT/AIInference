@@ -26,7 +26,7 @@ jobs:
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. -DENABLE_BENCHMARKS=OFF -DENABLE_MSAN=ON
+          cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DENABLE_BENCHMARKS=OFF -DENABLE_MSAN=ON
           make -j$(nproc)
       - name: Run unit tests
         run: ./build/tests/all_tests
