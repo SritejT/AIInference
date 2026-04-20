@@ -40,6 +40,14 @@ std::vector<float>::const_iterator Tensor::end() {
     return data.end();
 }
 
+float& Tensor::operator[](size_t index) {
+    return data[index];
+}
+
+const float& Tensor::operator[](size_t index) const {
+    return data[index];
+}
+
 Tensor Tensor::apply(std::function<float(float)> f) const {
     Tensor result(height, width, strategy);
     strategy.apply(f, this, &result);

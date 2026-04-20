@@ -13,10 +13,10 @@ void BasicTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* result)
             
             float sum = 0.0f;
             for (size_t k = 0; k < A_width; k++) {
-                sum += A->data[i * A_width + k] * B->data[k * result_width + j];
+                sum += (*A)[i * A_width + k] * (*B)[k * result_width + j];
             }
 
-            result->data[i * result_width + j] = sum;
+            (*result)[i * result_width + j] = sum;
             
         }
     }
@@ -24,20 +24,20 @@ void BasicTensorStrategy::mult(const Tensor* A, const Tensor* B, Tensor* result)
 
 void BasicTensorStrategy::add(const Tensor* A, const Tensor* B, Tensor* result) const {
     for (size_t i = 0; i < A->getHeight() * A->getWidth(); i++) {
-        result->data[i] = A->data[i] + B->data[i];
+        (*result)[i] = (*A)[i] + (*B)[i];
     }
 }
 
 void BasicTensorStrategy::transpose(const Tensor* A, Tensor* result) const {
     for (size_t i = 0; i < A->getHeight(); i++) {
         for (size_t j = 0; j < A->getWidth(); j++) {
-            result->data[j * A->getHeight() + i] = A->data[i * A->getWidth() + j];
+            (*result)[j * A->getHeight() + i] = (*A)[i * A->getWidth() + j];
         }
     }
 }
 
 void BasicTensorStrategy::apply(std::function<float(float)> f, const Tensor* A, Tensor* result) const {
     for (size_t i = 0; i < A->getHeight() * A->getWidth(); i++) {
-        result->data[i] = f(A->data[i]);
+        (*result)[i] = f((*A)[i]);
     }
 }
