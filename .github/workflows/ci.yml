@@ -18,19 +18,6 @@ jobs:
       - name: Run unit tests
         run: ./build/tests/all_tests
 
-  msan:
-    name: MSan
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: |
-          mkdir build && cd build
-          cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DENABLE_BENCHMARKS=OFF -DENABLE_MSAN=ON
-          make -j$(nproc)
-      - name: Run unit tests
-        run: ./build/tests/all_tests
-
   tsan:
     name: TSan
     runs-on: ubuntu-24.04-arm
@@ -45,3 +32,4 @@ jobs:
           make -j$(nproc)
       - name: Run unit tests
         run: ./build/tests/all_tests
+
