@@ -17,17 +17,19 @@ TEST_F(ThreadpoolTest, CheckSubmit) {
 }
 
 TEST_F(ThreadpoolTest, CheckManyTasks) {
+
     std::vector<std::future<int>> futures;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     for (int i = 0; i < 100; i++) {
-
         // Test tasks that may not be executed in the given order
-        auto future = ThreadpoolTest::pool.submit([i, &gen]() { 
+        auto future = ThreadpoolTest::pool.submit([i]() { 
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
+
             std::uniform_int_distribution<> dis(0, 100);
             std::this_thread::sleep_for(std::chrono::milliseconds(dis(gen)));
+
             return i; 
         });
 
