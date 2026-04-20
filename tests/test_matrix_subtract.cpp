@@ -25,22 +25,24 @@ TEST_P(MatrixSubtractTest, SmallMatrices) {
 
 TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
 
-    std::vector<float> a = std::vector<float>(10000, 0.0f);
-    for (unsigned long i=0; i<10000; i++) {
+    int n = 500;
+
+    std::vector<float> a = std::vector<float>(n * n, 0.0f);
+    for (unsigned long i=0; i<n*n; i++) {
         a[i] = i;
     }
 
-    std::vector<float> b = std::vector<float>(10000, 1.0f);
+    std::vector<float> b = std::vector<float>(n * n, 1.0f);
 
-    Tensor A = Tensor(a, 100, 100, *GetParam());
-    Tensor B = Tensor(b, 100, 100, *GetParam());
+    Tensor A = Tensor(a, n, n, *GetParam());
+    Tensor B = Tensor(b, n, n, *GetParam());
 
     Tensor result = A - B;
     
-    ASSERT_EQ(result.getWidth(), 100);
-    ASSERT_EQ(result.getHeight(), 100);
+    ASSERT_EQ(result.getWidth(), n);
+    ASSERT_EQ(result.getHeight(), n);
 
-    for (int i=0; i<10000; i++) {
+    for (int i=0; i<n*n; i++) {
         ASSERT_FLOAT_EQ(result.data[i], static_cast<float>(i-1));
     }
 
@@ -48,22 +50,24 @@ TEST_P(MatrixSubtractTest, LargeSquareMatrices) {
 
 TEST_P(MatrixSubtractTest, LargeNonSquareMatrices) {
 
-    std::vector<float> a = std::vector<float>(10000, 0.0f);
-    for (unsigned long i=0; i<10000; i++) {
+    int n = 250000;
+
+    std::vector<float> a = std::vector<float>(n, 0.0f);
+    for (unsigned long i=0; i<n; i++) {
         a[i] = i;
     }
 
-    std::vector<float> b = std::vector<float>(10000, 1.0f);
+    std::vector<float> b = std::vector<float>(n, 1.0f);
 
-    Tensor A = Tensor(a, 10000, 1, *GetParam());
-    Tensor B = Tensor(b, 10000, 1, *GetParam());
+    Tensor A = Tensor(a, n, 1, *GetParam());
+    Tensor B = Tensor(b, n, 1, *GetParam());
 
     Tensor result = A - B;
     
-    ASSERT_EQ(result.getHeight(), 10000);
+    ASSERT_EQ(result.getHeight(), n);
     ASSERT_EQ(result.getWidth(), 1);
 
-    for (int i=0; i<10000; i++) {
+    for (int i=0; i<n; i++) {
         ASSERT_FLOAT_EQ(result.data[i], static_cast<float>(i-1));
     }
 }

@@ -46,22 +46,25 @@ TEST_P(MatrixMultTest, SmallRectMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, LargeSquareMatrixMultTest) {
-    std::vector<float> a = std::vector<float>(10000, 0.0f);
-    for (unsigned long i=0; i<10000; i+=101) {
+
+    int n = 500;
+
+    std::vector<float> a = std::vector<float>(n*n, 0.0f);
+    for (unsigned long i=0; i<n*n; i+=n+1) {
         a[i] = 1.0f;
     }
 
-    std::vector<float> b = std::vector<float>(10000, 0.0f);
-    for (unsigned long i=0; i<10000; i++) {
+    std::vector<float> b = std::vector<float>(n*n, 0.0f);
+    for (unsigned long i=0; i<n*n; i++) {
         b[i] = static_cast<float>(i);
     }
 
-    Tensor A = Tensor(a, 100, 100, *GetParam());
-    Tensor B = Tensor(b, 100, 100, *GetParam());
+    Tensor A = Tensor(a, n, n, *GetParam());
+    Tensor B = Tensor(b, n, n, *GetParam());
 
     Tensor result = A * B;
-    ASSERT_EQ(result.getWidth(), 100);
-    ASSERT_EQ(result.getHeight(), 100);
+    ASSERT_EQ(result.getWidth(), n);
+    ASSERT_EQ(result.getHeight(), n);
 
     int j=0;
     for (auto r : result) {
@@ -71,17 +74,20 @@ TEST_P(MatrixMultTest, LargeSquareMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, LargeRectMatrixMultTest) {
-    std::vector<float> a = std::vector<float>(10000, 1.0f);
-    std::vector<float> b = std::vector<float>(10000, 1.0f);
+    
+    int n = 250000;
 
-    Tensor A = Tensor(a, 1, 10000, *GetParam());
-    Tensor B = Tensor(b, 10000, 1, *GetParam());
+    std::vector<float> a = std::vector<float>(250000, 1.0f);
+    std::vector<float> b = std::vector<float>(250000, 1.0f);
+
+    Tensor A = Tensor(a, 1, 250000, *GetParam());
+    Tensor B = Tensor(b, 250000, 1, *GetParam());
 
     Tensor result = A * B;
     ASSERT_EQ(result.getWidth(), 1);
     ASSERT_EQ(result.getHeight(), 1);
 
-    ASSERT_FLOAT_EQ(*result.begin(), 10000.0f);
+    ASSERT_FLOAT_EQ(*result.begin(), 250000.0f);
     
 }
 
@@ -106,34 +112,40 @@ TEST_P(MatrixMultTest, PrimeSizeMatrixMultTest) {
 }
 
 TEST_P(MatrixMultTest, NegativeValuesMatrixMultTest) {
-    std::vector<float> a = std::vector<float>(10000, -3.0f);
-    std::vector<float> b = std::vector<float>(10000, -67.0f);
+    
+    int n = 500;
 
-    Tensor A = Tensor(a, 100, 100, *GetParam());
-    Tensor B = Tensor(b, 100, 100, *GetParam());
+    std::vector<float> a = std::vector<float>(n*n, -3.0f);
+    std::vector<float> b = std::vector<float>(n*n, -67.0f);
+
+    Tensor A = Tensor(a, n, n, *GetParam());
+    Tensor B = Tensor(b, n, n, *GetParam());
 
     Tensor result = A * B;
-    ASSERT_EQ(result.getWidth(), 100);
-    ASSERT_EQ(result.getHeight(), 100);
+    ASSERT_EQ(result.getWidth(), n);
+    ASSERT_EQ(result.getHeight(), n);
 
     for (auto r : result) {
-        ASSERT_FLOAT_EQ(r, 20100.0f);
+        ASSERT_FLOAT_EQ(r, n * -3.0f * -67.0f);
     }
 }
 
 TEST_P(MatrixMultTest, LargeValuesMatrixMultTest) {
-    std::vector<float> a = std::vector<float>(100, 20000.0f);
-    std::vector<float> b = std::vector<float>(100, 10000.0f);
 
-    Tensor A = Tensor(a, 10, 10, *GetParam());
-    Tensor B = Tensor(b, 10, 10, *GetParam());
+    int n = 10;
+
+    std::vector<float> a = std::vector<float>(n*n, 20000.0f);
+    std::vector<float> b = std::vector<float>(n*n, 10000.0f);
+
+    Tensor A = Tensor(a, n, n, *GetParam());
+    Tensor B = Tensor(b, n, n, *GetParam());
 
     Tensor result = A * B;
-    ASSERT_EQ(result.getWidth(), 10);
-    ASSERT_EQ(result.getHeight(), 10);
+    ASSERT_EQ(result.getWidth(), n);
+    ASSERT_EQ(result.getHeight(), n);
 
     for (auto r : result) {
-        ASSERT_FLOAT_EQ(r, 2e9f);
+        ASSERT_FLOAT_EQ(r, 20000.0f * 10000.0f * n);
     }
 }
 

@@ -23,24 +23,24 @@ Tensor b = a.transpose();
 
 TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
 
-    std::vector<float> data(10000);
+    std::vector<float> data(250000);
 
-    for (int i = 0; i < 100; i++) {
-        for (int j = 0; j < 100; j++) {
-            data[i * 100 + j] = i;
+    for (int i = 0; i < 500; i++) {
+        for (int j = 0; j < 500; j++) {
+            data[i * 500 + j] = i;
         }
     }
 
-    Tensor a = Tensor(data, 100, 100, *GetParam());
+    Tensor a = Tensor(data, 500, 500, *GetParam());
 
     Tensor b = a.transpose();
 
-    ASSERT_EQ(b.getWidth(), 100);
-    ASSERT_EQ(b.getHeight(), 100);
+    ASSERT_EQ(b.getWidth(), 500);
+    ASSERT_EQ(b.getHeight(), 500);
 
-    for (int i = 0; i < 100; i++) {
-        for (int j = 0; j < 100; j++) {
-            ASSERT_FLOAT_EQ(b.data[j * 100 + i], i);
+    for (int i = 0; i < 500; i++) {
+        for (int j = 0; j < 500; j++) {
+            ASSERT_FLOAT_EQ(b.data[j * 500 + i], i);
         }
     }
     
