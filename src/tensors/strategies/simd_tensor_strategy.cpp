@@ -22,16 +22,16 @@ void SimdTensorStrategy::process_mult_block(
         for (size_t j = start_col; j < end_col; j += svcntw()) {
             svbool_t pg = svwhilelt_b32(j, end_col);
             
-            svfloat32_t acc = svld1_f32(pg, &(*result)[i * result_width + j]); 
+            svfloat32_t acc = svld1_f32(pg, &result->data[i * result_width + j]); 
 
             for (size_t k = start_k; k < end_k; k++) {
-                svfloat32_t va = svdup_n_f32((*A)[i * A_width + k]);
-                svfloat32_t vb = svld1_f32(pg, &(*B)[k * result_width + j]);
+                svfloat32_t va = svdup_n_f32(A->data[i * A_width + k]);
+                svfloat32_t vb = svld1_f32(pg, &B->data[k * result_width + j]);
                 acc = svmla_f32_x(pg, acc, va, vb);
             }
 
             // Store back
-            svst1_f32(pg, &(*result)[i * result_width + j], acc);
+            svst1_f32(pg, &result->data[i * result_width + j], acc);
         }
     }
  
@@ -52,10 +52,10 @@ void SimdTensorStrategy::process_add_block(
 
         for (size_t j = 0; j < end_col; j+=svcntw()) {
             svbool_t pg = svwhilelt_b32(j, end_col);
-            svfloat32_t va = svld1_f32(pg, &(*A)[i * width + j]);
-            svfloat32_t vb = svld1_f32(pg, &(*B)[i * width + j]);
+            svfloat32_t va = svld1_f32(pg, &A->data[i * width + j]);
+            svfloat32_t vb = svld1_f32(pg, &B->data[i * width + j]);
             va = svadd_f32_x(pg, va, vb);
-            svst1_f32(pg, &(*result)[i * width + j], va);
+            svst1_f32(pg, &result->data[i * width + j], va);
         }
 
     }
@@ -78,10 +78,10 @@ void SimdTensorStrategy::process_transpose_block(
         for (j=0; j+4 < width; j+=4) {
 
             // load 4 rows
-            float32x4_t r0 = vld1q_f32(&(*A)[i * width + j]);
-            float32x4_t r1 = vld1q_f32(&(*A)[(i + 1) * width + j]);
-            float32x4_t r2 = vld1q_f32(&(*A)[(i + 2) * width + j]);
-            float32x4_t r3 = vld1q_f32(&(*A)[(i + 3) * width + j]);
+            float32x4_t r0 = vld1q_f32(&A->data[i * width + j]);
+            float32x4_t r1 = vld1q_f32(&A->data[(i + 1) * width + j]);
+            float32x4_t r2 = vld1q_f32(&A->data[(i + 2) * width + j]);
+            float32x4_t r3 = vld1q_f32(&A->data[(i + 3) * width + j]);
 
             // pairwise transpose
             float32x4x2_t t01 = vtrnq_f32(r0, r1);  // {a0 b0 a2 b2}, {a1 b1 a3 b3}
@@ -94,24 +94,24 @@ void SimdTensorStrategy::process_transpose_block(
             float32x4_t o3 = vcombine_f32(vget_high_f32(t01.val[1]), vget_high_f32(t23.val[1]));
 
             // store
-            vst1q_f32(&(*result)[j * height + i], o0);
-            vst1q_f32(&(*result)[(j + 1) * height + i], o1);
-            vst1q_f32(&(*result)[(j + 2) * height + i], o2);
-            vst1q_f32(&(*result)[(j + 3) * height + i], o3);
+            vst1q_f32(&result->data[j * height + i], o0);
+            vst1q_f32(&result->data[(j + 1) * height + i], o1);
+            vst1q_f32(&result->data[(j + 2) * height + i], o2);
+            vst1q_f32(&result->data[(j + 3) * height + i], o3);
 
         }
 
         for (; j < width; j++) {
-            (*result)[j * height + i] = (*A)[i * width + j];
-            (*result)[j * height + i + 1] = (*A)[(i + 1) * width + j];
-            (*result)[j * height + i + 2] = (*A)[(i + 2) * width + j];
-            (*result)[j * height + i + 3] = (*A)[(i + 3) * width + j];
+            result->data[j * height + i] = A->data[i * width + j];
+            result->data[j * height + i + 1] = A->data[(i + 1) * width + j];
+            result->data[j * height + i + 2] = A->data[(i + 2) * width + j];
+            result->data[j * height + i + 3] = A->data[(i + 3) * width + j];
         }
     }
 
     for (; i < end_row; i++) {
         for (j = 0; j < width; j++) {
-            (*result)[j * height + i] = (*A)[i * width + j];
+            result->data[j * height + i] = A->data[i * width + j];
         }
     }
 }
@@ -128,7 +128,7 @@ void SimdTensorStrategy::process_apply_block(
 
     for (size_t i = start_row; i < end_row; i++) {
         for (size_t j = 0; j < width; j++) {
-            (*result)[i * width + j] = f((*A)[i * width + j]);
+            result->data[i * width + j] = f(A->data[i * width + j]);
         }
     }
 
@@ -154,15 +154,15 @@ void SimdTensorStrategy::subtract_rows(Tensor* A, size_t row1, size_t row2, floa
     for (; i+4 <= width; i+=4) {
 
         float32x4_t vmul = vdupq_n_f32(-multiple);
-        float32x4_t r1 = vld1q_f32(&(*A)[row1 * width + i]);
-        float32x4_t r2 = vld1q_f32(&(*A)[row2 * width + i]);
+        float32x4_t r1 = vld1q_f32(&A->data[row1 * width + i]);
+        float32x4_t r2 = vld1q_f32(&A->data[row2 * width + i]);
 
         r1 = vmlaq_f32(r1, r2, vmul);
-        vst1q_f32(&(*A)[row1 * width + i], r1);
+        vst1q_f32(&A->data[row1 * width + i], r1);
     }
 
     for (; i < width; i++) {
-        (*A)[row1 * width + i] -= multiple * (*A)[row2 * width + i];
+        A->data[row1 * width + i] -= multiple * A->data[row2 * width + i];
     }
 }
 
@@ -174,15 +174,15 @@ void SimdTensorStrategy::scale_row(Tensor* A, size_t row, float multiple) const 
     for (; i+4 <= width; i+=4) {
 
         float32x4_t vmul = vdupq_n_f32(multiple);
-        float32x4_t r1 = vld1q_f32(&(*A)[row * width + i]);
+        float32x4_t r1 = vld1q_f32(&A->data[row * width + i]);
 
         r1 = vmulq_f32(r1, vmul);
 
-        vst1q_f32(&(*A)[row * width + i], r1);
+        vst1q_f32(&A->data[row * width + i], r1);
     }
 
     for (; i < width; i++) {
-        (*A)[row * width + i] *= multiple;
+        A->data[row * width + i] *= multiple;
     }
 }
 
@@ -192,15 +192,15 @@ void SimdTensorStrategy::swap_rows(Tensor* A, size_t row1, size_t row2) const {
     size_t i = 0;
 
     for (; i+4 <= width; i+=4) {
-        float32x4_t r1 = vld1q_f32(&(*A)[row1 * width + i]);
-        float32x4_t r2 = vld1q_f32(&(*A)[row2 * width + i]);
+        float32x4_t r1 = vld1q_f32(&A->data[row1 * width + i]);
+        float32x4_t r2 = vld1q_f32(&A->data[row2 * width + i]);
 
-        vst1q_f32(&(*A)[row1 * width + i], r2);
-        vst1q_f32(&(*A)[row2 * width + i], r1);
+        vst1q_f32(&A->data[row1 * width + i], r2);
+        vst1q_f32(&A->data[row2 * width + i], r1);
     }
 
     for (; i < width; i++) {
-        std::swap((*A)[row1 * width + i], (*A)[row2 * width + i]);
+        std::swap(A->data[row1 * width + i], A->data[row2 * width + i]);
     }
 }
 

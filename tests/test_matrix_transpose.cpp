@@ -15,10 +15,10 @@ Tensor b = a.transpose();
 
     ASSERT_EQ(b.getWidth(), 2);
     ASSERT_EQ(b.getHeight(), 2);
-    ASSERT_FLOAT_EQ(b[0], 1.0f);
-    ASSERT_FLOAT_EQ(b[1], 3.0f);
-    ASSERT_FLOAT_EQ(b[2], 2.0f);
-    ASSERT_FLOAT_EQ(b[3], 4.0f);
+    ASSERT_FLOAT_EQ(b.data[0], 1.0f);
+    ASSERT_FLOAT_EQ(b.data[1], 3.0f);
+    ASSERT_FLOAT_EQ(b.data[2], 2.0f);
+    ASSERT_FLOAT_EQ(b.data[3], 4.0f);
 }
 
 TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
@@ -40,7 +40,7 @@ TEST_P(MatrixTransposeTest, TransposeLargeMatrix) {
 
     for (int i = 0; i < 500; i++) {
         for (int j = 0; j < 500; j++) {
-            ASSERT_FLOAT_EQ(b[j * 500 + i], i);
+            ASSERT_FLOAT_EQ(b.data[j * 500 + i], i);
         }
     }
     
