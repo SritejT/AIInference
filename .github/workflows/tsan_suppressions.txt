@@ -1,0 +1,5 @@
+race:std::__future_base
+race:std::promise
+race:std::packaged_task
+race:std::future
+race:std::shared_future
