@@ -8,6 +8,7 @@ class Tensor {
 private:
     size_t height, width;
     TensorStrategy& strategy;
+    std::vector<float> data;
 
     Tensor apply(std::function<float(float)> f) const;
 
@@ -16,7 +17,8 @@ public:
     Tensor(size_t h, size_t w, TensorStrategy& strategy);
     Tensor(std::vector<float> d, size_t h, size_t w, TensorStrategy& strategy);
 
-    std::vector<float> data;
+    float& operator[](size_t index) { return data[index]; }
+    const float& operator[](size_t index) const { return data[index]; }
 
     size_t getWidth() const;
     size_t getHeight() const;

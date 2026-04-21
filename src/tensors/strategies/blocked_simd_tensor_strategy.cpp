@@ -1,6 +1,6 @@
 #include "strategies/blocked_simd_tensor_strategy.h"
 
-#define BLOCK_SIZE 64 
+#define BLOCK_SIZE 8 
 
 void BlockedSimdTensorStrategy::subtract_rows(Tensor* A, size_t row1, size_t row2, float multiple) const {
     simd_strategy.subtract_rows(A, row1, row2, multiple);
