@@ -7,8 +7,9 @@ FetchContent_Declare(
 )
 
 set(BENCHMARK_ENABLE_TESTING OFF)
-FetchContent_MakeAvailable(benchmark)
+set(BENCHMARK_ENABLE_LIBPFM OFF)
 
+FetchContent_MakeAvailable(benchmark)
 
 # Create benchmark executables
 add_executable(mult_benchmarks benchmark_matrix_mult.cpp)

@@ -1,5 +1,4 @@
 #pragma once
-#include <arm_neon.h>
 #include "strategies/tensor_strategy.h"
 #include "strategies/simd_tensor_strategy.h"
 
