@@ -32,6 +32,4 @@ jobs:
           make -j$(nproc)
       - name: Run unit tests
         run: ./build/tests/all_tests
-        env:
-          TSAN_OPTIONS: suppressions=${{ github.workspace }}/.github/workflows/tsan_suppressions.txt
 

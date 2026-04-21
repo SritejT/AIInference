@@ -1,3 +1,0 @@
-race:std::__future_base
-race:std::packaged_task
-race:std::promise
