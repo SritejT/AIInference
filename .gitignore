@@ -5,3 +5,8 @@ build/
 
 *.trace/
 perf.data
+
+compile_commands.json
+run.sh
+profile.sh
+
