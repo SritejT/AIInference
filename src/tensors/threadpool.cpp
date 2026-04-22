@@ -8,11 +8,11 @@
 void Threadpool::worker_thread() {
     while (!done) {
         MovableFunction task;
-        if (work_queue.try_pop(task)) {
-            task();
-        } else {
-            std::this_thread::yield();
+        work_queue.wait_and_pop(task);
+        if (done) {
+            break;
         }
+        task();
     }
 }
 
@@ -26,6 +26,7 @@ Threadpool::Threadpool(size_t num_threads) : done(false) {
 
     } catch (...) {
         done = true;
+        work_queue.cleanup();
         throw;
     }
 }
@@ -35,6 +36,7 @@ Threadpool::Threadpool(size_t num_threads) : done(false) {
 // Cleanup by ending all worker threads.
 Threadpool::~Threadpool() {
     done = true;
+    work_queue.cleanup();
     for (auto& t : threads) {
         t.join();
     }

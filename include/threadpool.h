@@ -53,7 +53,6 @@ private:
 
     std::atomic_bool done;
     std::vector<std::thread> threads;
-    std::mutex queue_mutex;
     ThreadsafeQueue<MovableFunction> work_queue;
 
     void worker_thread(); 

@@ -19,7 +19,7 @@ TEST_F(ThreadpoolTest, CheckSubmit) {
 TEST_F(ThreadpoolTest, CheckManyTasks) {
     std::vector<std::future<int>> futures;
 
-     for (int i = 0; i < 100; i++) {
+     for (int i = 0; i < 1000; i++) {
 
         // Test tasks that may not be executed in the given order
         auto future = ThreadpoolTest::pool.submit([i]() { 
@@ -34,7 +34,7 @@ TEST_F(ThreadpoolTest, CheckManyTasks) {
         futures.push_back(std::move(future));
     }
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1000; i++) {
         auto result = futures[i].get();
         ASSERT_EQ(result, i);
     }
