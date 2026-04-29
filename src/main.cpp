@@ -1,6 +1,6 @@
 #include <cstring>
 #include "tensor.h"
-#include "strategies/blocked_simd_tensor_strategy.h"
+#include "strategies/optimised_tensor_strategy.h"
 #include <string>
 
 int main(int argc, char** argv) {
@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
     std::vector<float> a = std::vector<float>(n * n, 1.0f);
     std::vector<float> b = std::vector<float>(n * n, 1.0f);
 
-    TensorStrategy& strategy = BlockedSimdTensorStrategy::get_instance();
+    TensorStrategy& strategy = OptimisedTensorStrategy::get_instance();
 
     Tensor A = Tensor(a, n, n, strategy);
     Tensor B = Tensor(b, n, n, strategy);

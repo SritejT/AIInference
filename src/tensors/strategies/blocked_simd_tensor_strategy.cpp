@@ -2,14 +2,12 @@
 #include "strategies/kernel.h"
 #include <vector>
 
-#define BLOCK_SIZE 8
-
 // Template parameters for Kernel<mc, kc, nr>.
 // All three must evenly divide the padded matrix dimensions — inputs are
 // zero-padded up to the next multiple of each value before calling gemm.
 static constexpr int KMC = 32;
 static constexpr int KKC = 32;
-static constexpr int KNR = 32;
+static constexpr int KNR = 8;
 
 static inline int round_up(int val, int mult) {
     return ((val + mult - 1) / mult) * mult;
@@ -112,26 +110,47 @@ void BlockedSimdTensorStrategy::process_mult_block(
         size_t end_col,
         size_t end_k) const {
 
-    size_t result_height = A->getHeight();
-    size_t result_width = B->getWidth();
+    const int m = static_cast<int>(end_row - start_row);
+    const int k = static_cast<int>(end_k   - start_k);
+    const int n = static_cast<int>(end_col - start_col);
 
-    size_t A_width = A->getWidth(); 
+    const int A_width      = static_cast<int>(A->getWidth());
+    const int B_width      = static_cast<int>(B->getWidth());
+    const int result_width = static_cast<int>(result->getWidth());
 
+    const int m_p = round_up(m, KMC);
+    const int k_p = round_up(k, KKC);
+    const int n_p = round_up(n, KNR);
 
-    for (size_t I = start_row; I < end_row; I += BLOCK_SIZE) {
-        for (size_t J = start_col; J < end_col; J += BLOCK_SIZE) {
-            for (size_t K = start_k; K < end_k; K += BLOCK_SIZE) {
-                simd_strategy.process_mult_block(
-                        A,
-                        B, 
-                        result,
-                        I, 
-                        J, 
-                        K, 
-                        std::min(I + BLOCK_SIZE, end_row),
-                        std::min(J + BLOCK_SIZE, end_col),
-                        std::min(K + BLOCK_SIZE, end_k));
-            }
+    // A[start_row:end_row, start_k:end_k] (row-major) → column-major [m_p, k_p]
+    std::vector<float> A_col(m_p * k_p, 0.0f);
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < k; j++)
+            A_col[j * m_p + i] = (*A)[(start_row + i) * A_width + (start_k + j)];
+
+    // B[start_k:end_k, start_col:end_col] (row-major) → column-major [k_p, n_p]
+    std::vector<float> B_col(k_p * n_p, 0.0f);
+    for (int i = 0; i < k; i++)
+        for (int j = 0; j < n; j++)
+            B_col[j * k_p + i] = (*B)[(start_k + i) * B_width + (start_col + j)];
+
+    // C in block-packed format; kernel computes C += A*B
+    std::vector<float> C_blk(m_p * n_p, 0.0f);
+    Kernel<KMC, KKC, KNR>::gemm(A_col.data(), B_col.data(), C_blk.data(), m_p, k_p, n_p);
+
+    // Accumulate block-packed C back into row-major result (+=, not =, to
+    // preserve the accumulation semantics the original interface guarantees).
+    for (int i = 0; i < m; i++) {
+        const int block_row    = i / KMC;
+        const int row_in_block = i % KMC;
+        for (int j = 0; j < n; j++) {
+            const int panel_col    = j / KNR;
+            const int col_in_panel = j % KNR;
+            (*result)[(start_row + i) * result_width + (start_col + j)] +=
+                C_blk[  block_row    * KMC * n_p
+                      + panel_col    * KMC * KNR
+                      + col_in_panel * KMC
+                      + row_in_block ];
         }
     }
 }

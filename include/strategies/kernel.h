@@ -30,7 +30,7 @@ class Kernel {
     // How many k-iterations ahead to prefetch A columns in mult_blocks.
     // Sized for a ~10–20 cycle L1 load-to-use latency on Cortex-X/A series.
     // Retune by changing this single constant.
-    static constexpr int PREFETCH_K_DIST = 4;
+    static constexpr int PREFETCH_K_DIST = 10;
 
 public:
 
@@ -44,31 +44,59 @@ public:
     template parameter of each, i.e. mc for A/C, kc for B).
     */
     static void mult_blocks(float* A, float* B, float* C) {
+        static_assert(nr % 8 == 0, "nr must be a multiple of 8");
+
         int simd_width = svcntw();
         for (int i = 0; i < mc; i += simd_width) {
-            for (int j = 0; j < nr; j++) {
 
-                // Predicate: active lanes while (i + lane) < mc
-                svbool_t pg = svwhilelt_b32(i, mc);
+            // Predicate depends only on i — hoist above the j-loop.
+            svbool_t pg = svwhilelt_b32(i, mc);
 
-                // Prefetch next j-column of C into L1 while we compute
-                // the current column, so the store target is hot by the
-                // time svst1 executes on the next iteration.
-                if (j + 1 < nr)
-                    __builtin_prefetch(C + (j + 1) * mc + i, K_WRITE, K_L1);
+            // Process 8 columns of C/B at a time so all 8 accumulators are
+            // live simultaneously during the k-loop.  With nr=8 this jbase
+            // loop executes exactly once, giving true k-outer / j-inner order:
+            // A[i:,k] is loaded once per k step and reused across all 8 FMAs.
+            for (int jbase = 0; jbase < nr; jbase += 8) {
 
-                // Accumulate into C[i:i+simd_width, j]
-                svfloat32_t sum = svld1_f32(pg, C + j * mc + i);
+                // Load 8 C-column accumulators before entering the k-loop.
+                svfloat32_t s0 = svld1_f32(pg, C + (jbase + 0) * mc + i);
+                svfloat32_t s1 = svld1_f32(pg, C + (jbase + 1) * mc + i);
+                svfloat32_t s2 = svld1_f32(pg, C + (jbase + 2) * mc + i);
+                svfloat32_t s3 = svld1_f32(pg, C + (jbase + 3) * mc + i);
+                svfloat32_t s4 = svld1_f32(pg, C + (jbase + 4) * mc + i);
+                svfloat32_t s5 = svld1_f32(pg, C + (jbase + 5) * mc + i);
+                svfloat32_t s6 = svld1_f32(pg, C + (jbase + 6) * mc + i);
+                svfloat32_t s7 = svld1_f32(pg, C + (jbase + 7) * mc + i);
+
                 for (int k = 0; k < kc; k++) {
-                    // Prefetch an A column PREFETCH_K_DIST iterations ahead so
-                    // the load latency is hidden inside the FMA stream.
-                    if (k + PREFETCH_K_DIST < kc)
-                        __builtin_prefetch(A + (k + PREFETCH_K_DIST) * mc + i, K_READ, K_L1);
-                    svfloat32_t va = svld1_f32(pg, A + k * mc + i); // A[i:, k]
-                    svfloat32_t vb = svdup_n_f32(B[j * kc + k]);    // broadcast B[k, j]
-                    sum = svmla_f32_x(pg, sum, va, vb);
+                    // Issue A prefetch once per k step (first jbase batch only —
+                    // A is already in L1 for any subsequent jbase iterations).
+                    if (jbase == 0 && k + PREFETCH_K_DIST < kc)
+                        __builtin_prefetch(A + (k + PREFETCH_K_DIST) * mc + i,
+                                           K_READ, K_L1);
+
+                    // Load A[i:,k] once; broadcast B[jbase+j, k] for each of
+                    // the 8 columns — 8 independent FMA chains hide latency.
+                    svfloat32_t va = svld1_f32(pg, A + k * mc + i);
+                    s0 = svmla_f32_x(pg, s0, va, svdup_n_f32(B[(jbase + 0) * kc + k]));
+                    s1 = svmla_f32_x(pg, s1, va, svdup_n_f32(B[(jbase + 1) * kc + k]));
+                    s2 = svmla_f32_x(pg, s2, va, svdup_n_f32(B[(jbase + 2) * kc + k]));
+                    s3 = svmla_f32_x(pg, s3, va, svdup_n_f32(B[(jbase + 3) * kc + k]));
+                    s4 = svmla_f32_x(pg, s4, va, svdup_n_f32(B[(jbase + 4) * kc + k]));
+                    s5 = svmla_f32_x(pg, s5, va, svdup_n_f32(B[(jbase + 5) * kc + k]));
+                    s6 = svmla_f32_x(pg, s6, va, svdup_n_f32(B[(jbase + 6) * kc + k]));
+                    s7 = svmla_f32_x(pg, s7, va, svdup_n_f32(B[(jbase + 7) * kc + k]));
                 }
-                svst1_f32(pg, C + j * mc + i, sum);
+
+                // Store all 8 result columns.
+                svst1_f32(pg, C + (jbase + 0) * mc + i, s0);
+                svst1_f32(pg, C + (jbase + 1) * mc + i, s1);
+                svst1_f32(pg, C + (jbase + 2) * mc + i, s2);
+                svst1_f32(pg, C + (jbase + 3) * mc + i, s3);
+                svst1_f32(pg, C + (jbase + 4) * mc + i, s4);
+                svst1_f32(pg, C + (jbase + 5) * mc + i, s5);
+                svst1_f32(pg, C + (jbase + 6) * mc + i, s6);
+                svst1_f32(pg, C + (jbase + 7) * mc + i, s7);
             }
         }
     }
@@ -83,11 +111,6 @@ public:
     Computes C += A * B, partitioning n into nr-wide panels.
     */
     static void gebp(float* A, float* B, float* C, int n) {
-
-        // Prefetch A panel into L2
-        for (int i = 0; i < mc * kc; i += FLOATS_PER_CACHE_LINE) {
-            __builtin_prefetch(A + i, K_READ, K_L2);
-        }
 
         int N = n / nr;
 
